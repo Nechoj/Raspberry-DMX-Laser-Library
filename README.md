@@ -15,15 +15,15 @@ Hardware
 
 The Laser head is a low cost (~ 130 Euro) one used in small discos. Most important, the laser beam can be controlled in x and y direction, and that is what is needed. Disadvantages of this product are a noisy fan and narrow angle for the beam (approx. 30 degrees). I cannot fully cover my library shelves with one laser head, but the DMX bus would allow to connect as many devices as I would need.
 
-The ENTTEC DMX USB Pro interface costs about 170 Euro. There is a cheaper one called ENTTEC Open DMX (about 60 Euro). I have written a python driver for that modell as well (see /scripts/DmxFtdi.py). The disadvatage of that modell is, that the software has to control the timing on the DMX bus. Therefore, when clicking a button on the web interface, the web page freezes until all re-transmissions of the DMX messages is finished. Say, you want to point with the laser for about 5 sec, the page freezes for 5 sec. In contrast, the DMX Pro device controls the timing of the DMX bus, and the web page just sends one short command and is available immidiately afterwards. Therefore, I currently use the DMX Pro device (Python driver: scripts/DmxPro.py).
+The ENTTEC DMX USB Pro interface costs about 170 Euro. There is a cheaper one called ENTTEC Open DMX (about 60 Euro). I have written a Python driver for that modell as well (see /scripts/DmxFtdi.py). The disadvantage of that modell is, that the software has to control the timing on the DMX bus. Therefore, when clicking a button on the web interface, the web page freezes until all re-transmissions of the DMX messages is finished. Say, you want to point with the laser for about 5 sec, the page freezes for 5 sec. In contrast, the DMX Pro device controls the timing of the DMX bus, and the web page just sends one short command and is available immediately afterwards. Therefore, I currently use the DMX Pro device (Python driver: scripts/DmxPro.py).
 
-Remark: The power supply of 5V / 1.2A is good enough to power the DMX USB interfaces via the USB, so no powered USB hub is needed in that case.
+Remark: The power supply of 5V / 1.2A is good enough to power the DMX USB interfaces via the USB, so no powered USB hub is needed.
 
 Software on Raspberry Pi
 ========================
-- Raspbian , kernel version 3.10.25+ (downloaded from the official Raspberry.org site on February 2014)
+- Raspbian Linux , kernel version 3.10.25+ (downloaded from the official raspberrypi.org site on February 2014)
 - LAMP stack
-- Python with extension python-serial (and python-ftdi if you want to use the DmxFtdi.py driver)
+- Python with extension python-serial (and python-ftdi if you want to use the DmxFtdi.py driver, see above)
 
 Installing the LAMP stack:
 > sudo apt-get update
@@ -38,10 +38,10 @@ I have created directory /home/pi/www/ as a root to the apache web server. This 
 
 For security reasons, the scripts directory should not be accessible for all users. Therefore, the apache configuration file gets this entry:
 
-<Directory /home/pi/www/scripts/>
+'<Directory /home/pi/www/scripts/>'
      Order allow,deny
      deny from all
-</Directory>
+'</Directory>'
 
 The Edimax WLAN device needs some configuration as well: The driver configuration file /etc/modprobe.d/8192cu.conf ius created (using eg. sudo nano /etc/modprobe.d/8192cu.conf) and the following line should be in this file: options 8192cu rtw_power_mgnt=0 rtw_enusbss=0
 
