@@ -2,7 +2,7 @@ import serial, sys
 
 SOM = chr(0x7E) # start of message
 EOM = chr(0xE7) # end of message
-DMX_DATA_LENGTH = 25 # min 25, max 512
+DMX_DATA_LENGTH = 25 # min 25, max 512 - depending on the number of channels needed for the DMX device
 LABEL_SEND = chr(6) # message type for sending data
 START_CODE = chr(0) # start code of DMX protocol
 
@@ -37,7 +37,7 @@ class DmxPro:
         
     def setChannel(self, chan, value):
             # chan: 1...DMX_DATA_LENGTH; value: 1...127
-            self.buffer[chan-1] = chr(value) # note: 1st channels is self.buffer[0]
+            self.buffer[chan-1] = chr(value) # note: 1st channel is self.buffer[0]
 
     def clearChannels(self):
             self.buffer = bytearray(DMX_DATA_LENGTH)
