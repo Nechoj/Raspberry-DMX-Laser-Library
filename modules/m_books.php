@@ -89,6 +89,8 @@ while($dbrow = mysql_fetch_row($result)){
         echo '<option value="ID' . $dbrow[0] . '">' . $dbrow[1] . '</option>';
     }
 }
+// Free result set
+mysql_free_result($result);
 // Closing connection
 mysql_close($link);
 }
@@ -127,6 +129,8 @@ if($dbrow){// we found the book
     echo 'book not found <br />';
     exit(1);
 }
+// Free result set
+mysql_free_result($result);
 // Closing connection to DB (note: DB should be closed before using get_parameter() which opens DB again)
 mysql_close($link);
 

@@ -6,7 +6,7 @@ Rasberry Pi and DMX controlled Laser based Library Management System
 
 This is an experimental project with the goal, to manage my (rather large) home library. The first application realised is to use a web interface to control a movable laser that points to the requested book.
 
-With this software, you can also control any professional DMX lighting equipment via a web page hosted on a Raspberry Pi. DMX specification: see http://en.wikipedia.org/wiki/DMX512)
+With this software, you can also control any professional DMX lighting equipment via a web page hosted on a Raspberry Pi. (DMX specification: see http://en.wikipedia.org/wiki/DMX512)
 
 Hardware
 ========
@@ -14,14 +14,14 @@ Hardware
 - Power supply for Raspberry Pi (5V, 1.2A)
 - EDIMAX EW-7811UN Wireless USB Adapter
 - USB DMX Interface: ENTTEC DMX USB Pro
-- an adapter cable XLR 5-pin male to XLR 3-pin female (see e.g. http://www.thomann.de/de/pro_snake_tpa_1003_fm5.htm)
+- adapter cable XLR 5-pin male to XLR 3-pin female (see e.g. http://www.thomann.de/de/pro_snake_tpa_1003_fm5.htm)
 - Laser head: Stairville DJ Lase Performance 150 RGY (see e.g. http://www.thomann.de/de/stairville_dj_lase_performance_150_rgy.htm)
 
 The Laser head is a low cost one (~ 130 Euro) used in small discos. Most important, the laser beam can be controlled in x and y direction, and that is what is needed. Disadvantages of this product are a noisy fan and narrow angle for the beam (approx. 30 degrees). I cannot fully cover my library shelves with one laser head, but the DMX bus would allow to connect as many devices as I would need. If you want to use other laser devices, please check beforehand whether there are DMX channels for moving the laser beam in x and y direction.
 
 The ENTTEC DMX USB Pro interface costs about 170 Euro. There is a cheaper one called ENTTEC Open DMX USB interface (about 60 Euro). I have written a Python driver for that modell as well (see /scripts/DmxFtdi.py). The disadvantage of that modell is, that the software has to control the timing on the DMX bus. Therefore, when clicking a button on the web interface, the web page freezes until all re-transmissions of the DMX messages is finished. Say, you want to point with the laser for about 5 sec, the page freezes for 5 sec. In contrast, the DMX Pro device controls the timing of the DMX bus, and the web page just sends one short command and is available immediately afterwards. Therefore, I currently use the DMX Pro device (Python driver: scripts/DmxPro.py).
 
-(BTW: If you want to use the  ENTTEC Open DMX USB interface together with the Raspberry Pi my advise is to not try installing the Linux driver 'dmx_usb.ko' supplied by ENTTEC, see http://www.erwinrol.com/open-dmx-usb-linux-driver/. This is a nightmare and did cost me 2 days. Instead, just plug in the device and the Linux kernel will automatically load the standard ftdi_sio driver. And my Python script DmxFtdi.py works with this standard driver.)
+(BTW: If you want to use the  ENTTEC Open DMX USB interface together with the Raspberry Pi my advise is to not try installing the Linux driver 'dmx_usb.ko' supplied by ENTTEC, see http://www.erwinrol.com/open-dmx-usb-linux-driver/. This is a nightmare and did cost me 2 days. Instead, just plug in the device and the Linux kernel will automatically assign the standard ftdi_sio driver. And my Python script DmxFtdi.py works with this standard kernel driver.)
 
 Remark: The power supply of 5V / 1.2A is good enough to power the DMX USB interfaces via the USB, so no powered USB hub is needed.
 
