@@ -1,6 +1,6 @@
 Laser Library
 =============
-Rasberry Pi and DMX Laser based Library Management System
+Rasberry Pi and DMX controlled Laser based Library Management System
 
 (please read this file in raw mode)
 
