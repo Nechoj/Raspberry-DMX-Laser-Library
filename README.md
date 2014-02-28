@@ -1,7 +1,8 @@
 Laser Library
 =============
-
 Rasberry Pi and DMX Laser based Library Management System
+
+(please read this file in raw mode)
 
 This is an experimental project with the goal, to manage my (rather large) home library. The first application realised is to use a web interface to control a movable laser that points to the requested book.
 
@@ -26,11 +27,11 @@ Software on Raspberry Pi
 - Python with extension python-serial (and python-ftdi if you want to use the DmxFtdi.py driver, see above)
 
 Installing the LAMP stack:
-> sudo apt-get update
-> sudo apt-get install apache2 php5 php5-mysql mysql-server
+>> sudo apt-get update
+>> sudo apt-get install apache2 php5 php5-mysql mysql-server
 
 Installing the Python extension (python-ftdi needed only for the ENTTEC Open DMX USB device)
-> sudo apt-get install python-seriel (python-ftdi)
+>> sudo apt-get install python-seriel (python-ftdi)
 
 System configuration
 ======================
@@ -38,10 +39,10 @@ I have created directory /home/pi/www/ as a root to the apache web server. This 
 
 For security reasons, the scripts directory should not be accessible for all users. Therefore, the apache configuration file gets this entry:
 
-\<Directory /home/pi/www/scripts/\>
-Order allow,deny
-deny from all
-\</Directory\>
+<Directory /home/pi/www/scripts/>
+    Order allow,deny
+    deny from all
+</Directory>
 
 The Edimax WLAN device needs some configuration as well: The driver configuration file /etc/modprobe.d/8192cu.conf is created (using eg. sudo nano /etc/modprobe.d/8192cu.conf) and the following line should be in this file: options 8192cu rtw_power_mgnt=0 rtw_enusbss=0
 
