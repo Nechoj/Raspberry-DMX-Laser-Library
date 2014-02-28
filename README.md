@@ -6,6 +6,8 @@ Rasberry Pi and DMX controlled Laser based Library Management System
 
 This is an experimental project with the goal, to manage my (rather large) home library. The first application realised is to use a web interface to control a movable laser that points to the requested book.
 
+With this software, you can also control any professional lighting equipoment over DMX bus. DMX specification: see http://en.wikipedia.org/wiki/DMX512)
+
 Hardware
 ========
 - Raspberry Pi mod. B
