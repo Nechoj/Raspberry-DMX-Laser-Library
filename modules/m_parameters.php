@@ -1,5 +1,5 @@
 <?PHP
-/* This genral module maintains persistent global parameters in a database.
+/* This general module maintains persistent global parameters in a database.
 The mysql database has got a table named parameters and with this layout:
 
 mysql> describe parameters;
