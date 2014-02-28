@@ -58,9 +58,9 @@ wpa-scan-ssid 1
 wpa-ssid "Repeater2"
 wpa-psk "<your WPA key>"
 
-The address and gateway depends on your home network. Make sure, the this address is outside the range of the dynamic DHCP addresses of the gateway/router.
+The address and gateway depends on your home network. Make sure that this address is outside the range of the dynamic DHCP addresses of the gateway/router.
 
-Once the Raspberry is koohed onto the network, you can connect from your PC via ssh to the Raspberry instead of having a monitor and keyboard connected to the Raspberry.
+Once the Raspberry is hooked onto the wireless network, you can connect from your PC via ssh to the Raspberry instead of having a monitor and keyboard connected to the Raspberry.
 
 Files (*.html, *.py etc.) are transferred via sftp directly into the www root directory /home/pi/www/.
 
