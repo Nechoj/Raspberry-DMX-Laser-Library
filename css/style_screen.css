@@ -1,0 +1,60 @@
+/* Style Sheet */
+body
+{
+	color:#000;
+	background-color:#FFF;
+	font-family:Helvetica,Arial,sans-serif;
+}
+
+h3
+{
+	color:teal;
+}
+
+.Inputfield1
+{
+	padding-right:1em;
+	text-align:right;
+	font-size:100%;
+	height:1.2em;
+	width:4em;
+}
+
+.Inputfield2
+{
+	padding-right:1em;
+	text-align:right;
+	font-size:100%;
+	height:1.2em;
+	width:30em;
+}
+
+.DropDown
+{
+	text-align:right;
+	font-size:100%;
+	height:1.5em;
+	width:11.6em;
+}
+
+.DropDown2
+{
+	text-align:left;
+	font-size:100%;
+	height:2em;
+	padding:.2em;
+}
+
+.Button
+{
+	height:2em;
+	text-align:center;
+    font-size:100%;
+    width: 8em;
+}
+
+.Message
+{
+	color:red;
+	font-size:1.5em;
+}

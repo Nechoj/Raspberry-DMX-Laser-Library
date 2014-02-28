@@ -1,0 +1,27 @@
+/* Style Sheet for handhelds*/
+p
+{
+    fontsize: 200%;
+}
+
+h1 /* red headline to see whether handheld style is applied */
+{
+	color:red;
+}
+
+.Button
+{
+	height:2em;
+	text-align:center;
+    font-size:1.2em;
+    width: 25%;
+}
+
+.DropDown2
+{
+	text-align:right;
+	font-size:1.2em;
+	height:2em;
+	width:100%;
+    padding: 0.5em;
+}
