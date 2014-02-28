@@ -39,8 +39,8 @@ I have created directory /home/pi/www/ as a root to the apache web server. This 
 For security reasons, the scripts directory should not be accessible for all users. Therefore, the apache configuration file gets this entry:
 
 \<Directory /home/pi/www/scripts/\>
-     Order allow,deny
-     deny from all
+Order allow,deny
+deny from all
 \</Directory\>
 
 The Edimax WLAN device needs some configuration as well: The driver configuration file /etc/modprobe.d/8192cu.conf ius created (using eg. sudo nano /etc/modprobe.d/8192cu.conf) and the following line should be in this file: options 8192cu rtw_power_mgnt=0 rtw_enusbss=0
