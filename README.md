@@ -43,7 +43,7 @@ Order allow,deny
 deny from all
 \</Directory\>
 
-The Edimax WLAN device needs some configuration as well: The driver configuration file /etc/modprobe.d/8192cu.conf ius created (using eg. sudo nano /etc/modprobe.d/8192cu.conf) and the following line should be in this file: options 8192cu rtw_power_mgnt=0 rtw_enusbss=0
+The Edimax WLAN device needs some configuration as well: The driver configuration file /etc/modprobe.d/8192cu.conf is created (using eg. sudo nano /etc/modprobe.d/8192cu.conf) and the following line should be in this file: options 8192cu rtw_power_mgnt=0 rtw_enusbss=0
 
 Next, the file /etc/network/interfaces needs editing. I wanted a static IP address for the Rasberry and herefore added this section:
 
