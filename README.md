@@ -27,11 +27,11 @@ Software on Raspberry Pi
 - Python with extension python-serial (and python-ftdi if you want to use the DmxFtdi.py driver, see above)
 
 Installing the LAMP stack:
->> sudo apt-get update
->> sudo apt-get install apache2 php5 php5-mysql mysql-server
+> sudo apt-get update
+> sudo apt-get install apache2 php5 php5-mysql mysql-server
 
-Installing the Python extension (python-ftdi needed only for the ENTTEC Open DMX USB device)
->> sudo apt-get install python-seriel (python-ftdi)
+Installing the Python extension (python-ftdi needed only for the ENTTEC Open DMX USB device):
+> sudo apt-get install python-seriel (python-ftdi)
 
 System configuration
 ======================
@@ -46,7 +46,7 @@ For security reasons, the scripts directory should not be accessible for all use
 
 The Edimax WLAN device needs some configuration as well: The driver configuration file /etc/modprobe.d/8192cu.conf is created (using eg. sudo nano /etc/modprobe.d/8192cu.conf) and the following line should be in this file: options 8192cu rtw_power_mgnt=0 rtw_enusbss=0
 
-Next, the file /etc/network/interfaces needs editing. I wanted a static IP address for the Rasberry and herefore added this section:
+Next, the file /etc/network/interfaces needs editing. I wanted a static IP address for the Rasberry and therefore added this section:
 
 auto wlan0
 allow-hotplug wlan0
@@ -58,7 +58,7 @@ wpa-scan-ssid 1
 wpa-ssid "Repeater2"
 wpa-psk "<your WPA key>"
 
-The address depends on your home network. Make sure, the this address is outside the range of the dynamic DHCP addresses of the gateway/router.
+The address and gateway depends on your home network. Make sure, the this address is outside the range of the dynamic DHCP addresses of the gateway/router.
 
 Once the Raspberry is koohed onto the network, you can connect from your PC via ssh to the Raspberry instead of having a monitor and keyboard connected to the Raspberry.
 
@@ -70,12 +70,12 @@ For development of html, php and Python I am using the mirabyte Web Architect to
 
 Python scripts controlling the laser head
 =========================================
-There are two Python scripts importing the Python DMX driver and controlling the laser head: First script (scripts/laser_xy.py) directs the laser beam to a certain position. The second scripts turns the laser off (scripts/laser_stop.py). Both scripts import the Python DMX driver script DmxPro.py.The scripts can be used directly on the shell command line of the Raspberry Pi as follows
+There are two Python scripts controlling the laser head: First script (scripts/laser_xy.py) directs the laser beam to a certain position. The second scripts turns the laser off (scripts/laser_stop.py). Both scripts import the Python DMX driver script DmxPro.py. The scripts can be used directly on the shell command line of the Raspberry Pi as follows
 
-> python laser_xy.py -x nx -y ny (nx, ny: 1 ... 127)
+> python laser_xy.py -x nx -y ny (nx, ny: allowed numbers 1...127 for my laser head)
 > python laser_stop.py
 
-These scripts will need editing, when working with a different laser head product. See the manual of the laser head, which DMX channel controls which function.
+These scripts will need editing when working with a different laser head product. See the manual of the laser head which DMX channel controls which function.
 
 mysql database
 ==============
@@ -83,7 +83,7 @@ For accessing the database, the web application uses the 'web_user' user. This u
 
 mysql> CREATE USER ‘web_user’@’localhost’ IDENTIFIED BY ‘dbwebuserpwd’;
 
-Next, create a database called 'laser' and grant the right to user web_user:
+Next, create a database called 'laser' and grant the rights to user web_user:
 
 mysql> CREATE DATABASE laser;
 mysgl> GRANT ALL ON laser.* TO 'web_user'@'localhost';
@@ -101,9 +101,9 @@ The web pages are build using html, php and css. The Python scripts are called i
 
 There are 3 pages. Main page is index.php which is the interface for the ordinary user. You can select a book and press the 'find' button. The laser points to that book. The 'stop' button stops the laser. That's all.
 
-The page 'parameters.php' is used for system configuration. When you install the laser head opposite to the book shelf, it can cover a certain range. This range needs configuration. Using the parameters.php page, create the following parameters:
+The page 'parameters.php' is used for system configuration. When you install the laser head opposite to the book shelf, it can cover a certain range of books. This range needs configuration. Open the parameters.php page in your web browser and create the following parameters:
 
-(Remark: check out the value for the y-coordinates using the Python script laser_xy.py on the Raspberry command line)
+(Remark: check out the value for the y- and x-coordinates using the Python script laser_xy.py on the Raspberry command line)
 
 name: y_row_1
 value: <laser y-coordinate for topmost row of books>
