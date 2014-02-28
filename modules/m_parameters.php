@@ -46,7 +46,7 @@ if ($row[2] == 'integer'){
     	exit(1);
 	}
 }elseif ($row[2] == 'bool'){
-	if ($row[2] == '1' or $row[2] == 'true' or $row[2] == 'TRUE' or $row[2] == 'wahr' or $row[2] == 'WAHR'){
+	if ($row[1] == '1' or $row[1] == 'true' or $row[1] == 'TRUE' or $row[1] == 'wahr' or $row[1] == 'WAHR'){
 		$ret = true;
 	}else{
 		$ret = false;
