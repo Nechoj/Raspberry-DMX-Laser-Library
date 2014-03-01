@@ -29,6 +29,9 @@ include 'modules/m_books.php';
         <input type="submit" name="button1" class="Button" value="find"/>
         <input type="submit" name="button2" class="Button" value="stop"/>
     </p>
+    <p>
+        <input type="submit" name="button3" class="Button" value="shutdown server"/>
+    </p>
 </form>
 
 <?php
@@ -41,6 +44,10 @@ if (isset($_REQUEST["button1"])){ // if button1 was clicked on: find book
 }
 if (isset($_REQUEST["button2"])){ // if button2 was clicked on: stop laser
     $command = "sudo python scripts/laser_stop.py";
+    exec($command);
+}
+if (isset($_REQUEST["button3"])){ // if button3 was clicked on: shutdown raspberry server
+    $command = "sudo shutdown -h now";
     exec($command);
 }
 ?>
