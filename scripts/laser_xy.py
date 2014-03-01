@@ -15,7 +15,7 @@ dmx = DmxPro('/dev/ttyUSB0')
 
 dmx.setChannel(1,252) # DMX mode
 dmx.setChannel(2,152) # pattern; 152 = horizontal line
-dmx.setChannel(3,115) # zoom
+dmx.setChannel(3,120) # zoom
 dmx.setChannel(4,0) # rotation y
 dmx.setChannel(5,0) # rotation x
 dmx.setChannel(6,0)  # rotation z

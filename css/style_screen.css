@@ -3,7 +3,9 @@ body
 {
 	color:#000;
 	background-color:#FFF;
+    font-size:200%;
 	font-family:Helvetica,Arial,sans-serif;
+    margin-left:2em;
 }
 
 h3
