@@ -105,7 +105,7 @@ Two tables in the database are needed: table books and table parameters. These a
 
 Now the database is prepared.
 
-##Web page
+##Web pages
 
 The web pages are build using html, php and css. The Python scripts are called inside the php functions using the exec() command.
 

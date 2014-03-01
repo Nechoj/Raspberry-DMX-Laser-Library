@@ -24,8 +24,7 @@ include 'modules/m_parameters.php';
 	<p><input type="text" class="Inputfield2" name="value" value="<?php echo isset($_POST['value']) ? htmlspecialchars($_POST['value']) : ''; ?>" /> value (set, create)</p>
     <p>
         <select name="type" class="DropDown" size="1" >
-            <option selected="selected"></option>
-            <option>integer</option>
+            <option selected="selected">integer</option>
             <option>string</option>
             <option>bool</option>
             <option>date</option>
