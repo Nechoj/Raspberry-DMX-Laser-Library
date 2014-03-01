@@ -58,7 +58,7 @@ and the following line should be in this file:
 
     options 8192cu rtw_power_mgnt=0 rtw_enusbss=0
 
-Next, the file /etc/network/interfaces needs editing. I wanted a static IP address for the Rasberry and therefore added this section:
+Next, the file /etc/network/interfaces needs editing. I wanted a static IP address for the Raspberry and therefore added this section:
 
     auto wlan0
     allow-hotplug wlan0
@@ -67,7 +67,7 @@ Next, the file /etc/network/interfaces needs editing. I wanted a static IP addre
     gateway 192.168.178.1
     wpa-ap-scan 1
     wpa-scan-ssid 1
-    wpa-ssid "Repeater2"
+    wpa-ssid "<your WLAN SSID>"
     wpa-psk "<your WPA key>"
 
 The address and gateway depends on your home network. Make sure that this address is outside the range of the dynamic DHCP addresses of the gateway/router.
