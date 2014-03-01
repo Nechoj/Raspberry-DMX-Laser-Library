@@ -3,7 +3,7 @@
 Rasberry Pi and DMX controlled Laser based Library Management System
 
 
-This is an experimental project with the goal, to manage my (rather large) home library. The first application realised is to use a web interface to control a movable laser that points to the requested book.
+This is an experimental project with the goal, to manage my (rather large) home library. The first application realised is to use a web interface to control a movable laser that points to the requested book (or DVD or CD).
 
 With this software, you can also control any professional DMX lighting equipment via a web page hosted on a Raspberry Pi. (DMX specification: see http://en.wikipedia.org/wiki/DMX512)
 
@@ -32,7 +32,7 @@ Remark: The power supply of 5V / 1.2A is good enough to power the DMX USB interf
 
 Installing the LAMP stack (well, Linux seems to be installed already ;-)):
 
-    > sudo apt-get update
+    > sudo apt-cache update
     > sudo apt-get install apache2 php5 php5-mysql mysql-server
 
 Installing the Python extension (python-ftdi needed only for the ENTTEC Open DMX USB device):
