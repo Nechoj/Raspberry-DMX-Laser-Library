@@ -1,42 +1,42 @@
 /* Style Sheet */
 body
 {
-	color:#000;
-	background-color:#FFF;
+    color:#000;
+    background-color:#FFF;
     font-size:200%;
-	font-family:Helvetica,Arial,sans-serif;
+    font-family:Helvetica,Arial,sans-serif;
     margin-left:2em;
 }
 
 h3
 {
-	color:teal;
+    color:teal;
 }
 
 .Inputfield1
 {
-	padding-right:1em;
-	text-align:right;
-	font-size:100%;
-	height:1.2em;
-	width:4em;
+    padding-right:1em;
+    text-align:right;
+    font-size:100%;
+    height:1.2em;
+    width:4em;
 }
 
 .Inputfield2
 {
-	padding-right:1em;
-	text-align:right;
-	font-size:100%;
-	height:1.2em;
-	width:30em;
+    padding-right:1em;
+    text-align:right;
+    font-size:100%;
+    height:1.2em;
+    width:30em;
 }
 
 .DropDown
 {
-	text-align:right;
-	font-size:100%;
-	height:1.5em;
-	width:11.6em;
+    text-align:right;
+    font-size:100%;
+    height:1.5em;
+    width:11.6em;
 }
 
 .DropDown2
