@@ -84,9 +84,9 @@ $result = mysql_query("SELECT * FROM books ORDER BY title") OR die(mysql_error()
 
 while($dbrow = mysql_fetch_row($result)){
     if($bookID == $dbrow[0]){
-        echo '<option selected value="ID' . $dbrow[0] . '">' . $dbrow[1] . '</option>';
+        echo '<option selected value="ID' . $dbrow[0] . '">' . $dbrow[1] . ' / ' . $dbrow[2] . '</option>';
     }else{
-        echo '<option value="ID' . $dbrow[0] . '">' . $dbrow[1] . '</option>';
+        echo '<option value="ID' . $dbrow[0] . '">' . $dbrow[1] . ' / ' . $dbrow[2] . '</option>';
     }
 }
 // Free result set

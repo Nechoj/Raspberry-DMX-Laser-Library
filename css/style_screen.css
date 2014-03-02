@@ -3,9 +3,9 @@ body
 {
     color:#000;
     background-color:#FFF;
-    font-size:200%;
+    font-size:120%;
     font-family:Helvetica,Arial,sans-serif;
-    margin-left:2em;
+    margin-left:1em;
 }
 
 h3
@@ -15,43 +15,36 @@ h3
 
 .Inputfield1
 {
-    padding-right:1em;
     text-align:right;
     font-size:100%;
     height:1.2em;
     width:4em;
+    padding-right:1em;
 }
 
 .Inputfield2
 {
-    padding-right:1em;
-    text-align:right;
+    text-align:left;
     font-size:100%;
     height:1.2em;
     width:30em;
+    padding-right:1em;
 }
 
 .DropDown
 {
-    text-align:right;
-    font-size:100%;
-    height:1.5em;
-    width:11.6em;
-}
-
-.DropDown2
-{
     text-align:left;
     font-size:100%;
+    min-width:8em;
     height:2em;
     padding:.2em;
 }
 
 .Button
 {
-    height:2em;
     text-align:center;
     font-size:100%;
+    height:2em;
     width: 8em;
 }
 

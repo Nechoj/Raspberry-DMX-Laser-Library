@@ -54,7 +54,7 @@ if (isset($_REQUEST["button1"])){ // if button1 was clicked on: create
 
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
     <p>
-        <select name="books1" class="DropDown2" size="1">
+        <select name="books1" class="DropDown" size="1">
             <?php book_select(isset($_POST['books1']) ? substr($_POST['books1'], 2) : 0); ?>
         </select> select title
     </p>

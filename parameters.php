@@ -38,6 +38,9 @@ include 'modules/m_parameters.php';
         <input type="submit" name="button3" class="Button" value="create"/>
         <input type="submit" name="button4" class="Button" value="delete"/>
     </p>
+    <p>
+        <input type="submit" name="button5" class="Button" value="shutdown server"/>
+    </p>
 </form>
 
 
@@ -61,6 +64,10 @@ if (isset($_REQUEST["button3"])){ // if button3 was clicked on: create
 
 if (isset($_REQUEST["button4"])){ // if button4 was clicked on: delete
     delete_parameter($_POST['name']);
+}
+if (isset($_REQUEST["button5"])){ // if button5 was clicked on: shutdown raspberry server
+    $command = "sudo shutdown -h now";
+    exec($command);
 }
 ?>
 
