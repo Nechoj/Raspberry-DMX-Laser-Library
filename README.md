@@ -111,7 +111,9 @@ Now the database is prepared.
 
 The web pages are build using html, php and css. The Python scripts are called inside the php functions using the exec() command.
 
-There are 3 pages. Main page is index.php which is the interface for the ordinary user. You can select a book and press the 'find' button. The laser points to that book. The 'stop' button stops the laser. That's all.
+There are 3 pages. Main page is index.php which is the interface for the ordinary user. You can select a book and press the 'find' button. The laser points to that book. The 'stop' button stops the laser.
+
+On page books.php, the books are inserted into the database. You need to give the row number and the distance of the book from the left border of the shelf (in cm).
 
 The page 'parameters.php' is used for system configuration. When you install the laser head opposite to the book shelf, it can cover a certain range of books. This range needs configuration. Open the parameters.php page in your web browser and create the following parameters:
 
@@ -145,8 +147,6 @@ Then create the following parameters:
     value: <distance of the mostright position of the laser to the left border of the bookshelf, in cm>
     datatype: integer
 
-On page books.php, the books are inserted into the database. You need to give the row number and the distance of the book from the left border of the shelf (in cm).
-
-Have fun!
+That's all. Have fun!
 
 Jochen
