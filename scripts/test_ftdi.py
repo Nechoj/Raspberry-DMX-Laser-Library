@@ -16,17 +16,17 @@ count = int(options.time)*10
 
 dmx = DmxFtdi()
 
-dmx.setChannel(1,252) # DMX Betrieb
-dmx.setChannel(2,0) # Pattern
-dmx.setChannel(3,120) # Zoom
-dmx.setChannel(4,0) # Rotation um y
-dmx.setChannel(5,0) # Rotation um x
-dmx.setChannel(6,0)  # Rotation um z
-dmx.setChannel(7,x)  # x-Achse
-dmx.setChannel(8,y)  # y-Achse
-dmx.setChannel(9,32)  # Farbe: 16=rot, 32=gruen, 48=gelb, 127=wechselnd
+dmx.setChannel(1,252) # DMX mode
+dmx.setChannel(2,0) # pattern; 152 = horizontal line
+dmx.setChannel(3,120) # zoom
+dmx.setChannel(4,0) # rotation y
+dmx.setChannel(5,0) # rotation x
+dmx.setChannel(6,0)  # rotation z
+dmx.setChannel(7,x)  # move to x position
+dmx.setChannel(8,y)  # move to y position
+dmx.setChannel(9,32)  # color: 16=red, 32=green, 48=yellow (both), 127=changing
 
-for i in xrange(1,count,1):
+for i in xrange(1,count,1): # repeat command every 1/10 sec
         dmx.send()
         time.sleep(0.1)
 

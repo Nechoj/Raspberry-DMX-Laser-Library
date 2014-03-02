@@ -1,17 +1,16 @@
 from DmxPro import DmxPro
-import time
 
 dmx = DmxPro('/dev/ttyUSB0')
 
-dmx.setChannel(1,252) # DMX Betrieb
-dmx.setChannel(2,0) # Pattern
-dmx.setChannel(3,120) # Zoom
-dmx.setChannel(4,0) # Rotation um y
-dmx.setChannel(5,0) # Rotation um x
-dmx.setChannel(6,0)  # Rotation um z
-dmx.setChannel(7,0)  # x-Achse
-dmx.setChannel(8,0)  # y-Achse
-dmx.setChannel(9,32)  # Farbe: 16=rot, 32=gruen, 48=gelb, 127=wechselnd
+dmx.setChannel(1,252) # DMX mode
+dmx.setChannel(2,152) # pattern
+dmx.setChannel(3,120) # zoom
+dmx.setChannel(4,0) # rotation y
+dmx.setChannel(5,0) # rotation x
+dmx.setChannel(6,0)  # rotation z
+dmx.setChannel(7,0)  # move to x position
+dmx.setChannel(8,0)  # move to y position
+dmx.setChannel(9,32)  # color: 16=red, 32=green, 48=yellow (both), 127=changing
 
 dmx.send()
 
