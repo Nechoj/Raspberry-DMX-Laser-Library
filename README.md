@@ -3,7 +3,7 @@
 Rasberry Pi and DMX controlled Laser based Library Management System
 
 
-This is an experimental project with the goal, to manage my (rather large) home library. The first application realised is to use a web interface to control a movable laser that points to the requested book (or DVD or CD). There is a video on YouTube showing the application and the hardware: http://www.youtube.com/watch?v=pfFCx0tT5D0
+This is an experimental project with the goal, to manage my home library. The first application realised is to use a web interface to control a movable laser that points to the requested book (or DVD or CD). There is a video on YouTube showing the application and the hardware: http://www.youtube.com/watch?v=pfFCx0tT5D0
 
 
 With this software, you can also control any professional DMX lighting equipment via a web page hosted on a Raspberry Pi. (DMX specification: see http://en.wikipedia.org/wiki/DMX512)
@@ -42,7 +42,7 @@ Installing the Python extension (python-ftdi needed only for the ENTTEC Open DMX
 
 ##System configuration
 
-I use directory /home/pi/www/ as a root to the apache web server. This root is set in file /etc/apache2/sites-available/default. Further directories needed are /home/pi/www/scripts, /home/pi/www/modules and /home/pi/www/css.
+The directory /home/pi/www/ is used as the root for the apache web server. This root is set in file /etc/apache2/sites-available/default. Further directories needed are /home/pi/www/scripts, /home/pi/www/modules and /home/pi/www/css.
 
 For security reasons, the scripts directory should not be accessible for all users. Therefore, the apache configuration file gets this entry:
 
