@@ -143,18 +143,16 @@ $x_right_dist = get_parameter('x_right_dist'); // distance of rightmost laser po
 $x_left = get_parameter('x_left'); // value for channel 'move to x' for leftmost laser position
 $x_right = get_parameter('x_right'); // value for channel 'move to x' for rightmost laser position
 
-// calculate the width of a step
-$stepwidth = ($x_right_dist- $x_left_dist)/abs($x_right-$x_left);
+// calculate the width of a step (might be negative if x_left > x_right)
+$stepwidth = ($x_right_dist- $x_left_dist)/($x_right-$x_left);
 //echo "$stepwidth <br />";
 // calculate the x-coordinate
 if($position < $x_left_dist){ // book is outside left range
     $x = $x_left;
 }elseif($position > $x_right_dist){ // book is outside right range
     $x = $x_right;
-}elseif($x_right>$x_left){ // x-values increase from left to right
+}else{
     $x = $x_left + ($position - $x_left_dist)/$stepwidth;
-}else{ // x-values decrease from left to right
-    $x = $x_left - ($position - $x_left_dist)/$stepwidth;
 }
 
 $x = (integer)$x;
