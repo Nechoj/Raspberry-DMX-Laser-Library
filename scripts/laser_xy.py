@@ -20,7 +20,7 @@ dmx.setChannel(4,0) # rotation y
 dmx.setChannel(5,0) # rotation x
 dmx.setChannel(6,0)  # rotation z
 dmx.setChannel(7,x)  # move to x position
-dmx.setChannel(8,y)  # move to x position
+dmx.setChannel(8,y)  # move to y position
 dmx.setChannel(9,32)  # color: 16=red, 32=green, 48=yellow (both), 127=changing
 
 dmx.send()
