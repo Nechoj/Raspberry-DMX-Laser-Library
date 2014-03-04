@@ -10,32 +10,32 @@ class DmxFtdi:
 
                 if ftdi.ftdi_init(self.ftdic) < 0:
                     print "ftdi_init failed"
-                    sys.exit(0)
+                    sys.exit(1)
 
                 ret = ftdi.ftdi_usb_open(self.ftdic, 0x0403, 0x6001) # The Enttec Open DMX device is identified with these IDs
                 if (ret) < 0:
                     print "ftdi_usb_open failed"
                     print ret
                     print ftdi.ftdi_get_error_string(self.ftdic)
-                    sys.exit(0)
+                    sys.exit(1)
 
                 ret = ftdi.ftdi_set_baudrate(self.ftdic, 250000) # The 250K Baud is required by the DMX standard
                 if (ret) < 0:
                     print "ftdi_set_baudrate failed"
                     print ret
                     print ftdi.ftdi_get_error_string(self.ftdic)
-                    sys.exit(0)
+                    sys.exit(1)
 
                 ret = ftdi.ftdi_set_line_property2(self.ftdic,8,2,0,1) # 8 data bits + 2 stop bits required by the DMX standard
                 if (ret) < 0:
                     print "ftdi_set_line_property failed"
                     print ret
                     print ftdi.ftdi_get_error_string(self.ftdic)
-                    sys.exit(0)
+                    sys.exit(1)
                 
             except:
                 print "Error: could not open and configure FTDI device"
-                sys.exit(0)
+                sys.exit(1)
 
             self.buffer=bytearray(DMX_DATA_LENGTH)
 

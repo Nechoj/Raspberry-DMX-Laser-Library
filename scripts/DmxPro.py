@@ -13,7 +13,7 @@ class DmxPro:
                 self.serial=serial.Serial(serialPort, baudrate=115200)
             except:
                 print "Error: could not open Serial Port"
-                sys.exit(0)
+                sys.exit(1)
         
             self.buffer=bytearray(DMX_DATA_LENGTH) # array for holding the data to be sent
         
