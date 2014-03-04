@@ -13,7 +13,7 @@ h3
     color:teal;
 }
 
-.Inputfield1
+.Inputfield1 /* for numbers */
 {
     text-align:right;
     font-size:100%;
@@ -22,7 +22,7 @@ h3
     padding-right:1em;
 }
 
-.Inputfield2
+.Inputfield2 /* for text */
 {
     text-align:left;
     font-size:100%;

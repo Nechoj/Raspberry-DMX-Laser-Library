@@ -4,10 +4,9 @@ import time
 
 #option parser
 parser = OptionParser()
-parser.add_option("-d", "--dev", dest="dev", default = "1", help="number of laser device")
 parser.add_option("-x", "--xcoord", dest="x", default = "0", help="x-coordiante of laser")
 parser.add_option("-y", "--ycoord", dest="y", default = "0", help="y-coordiante of laser")
-parser.add_option("-t", "--time", dest="time", default = "1", help="duration of pointing in seconds")
+parser.add_option("-t", "--time", dest="time", default = "1", help="duration of laser pointing in seconds")
 (options, args) = parser.parse_args()
 
 x = int(options.x)

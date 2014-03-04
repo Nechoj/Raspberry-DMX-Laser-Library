@@ -44,7 +44,7 @@ class DmxPro:
 
     def send(self):
             # convert byte array to string
-            sdata = str(self.buffer)
+            payload = str(self.buffer)
             # send out
             #print (SOM+LABEL_SEND+self.MsgLen_LSB+self.MsgLen_MSB+START_CODE+sdata+EOM).encode("hex")
-            self.serial.write(SOM+LABEL_SEND+self.MsgLen_LSB+self.MsgLen_MSB+START_CODE+sdata+EOM)
+            self.serial.write(SOM+LABEL_SEND+self.MsgLen_LSB+self.MsgLen_MSB+START_CODE+payload+EOM)
