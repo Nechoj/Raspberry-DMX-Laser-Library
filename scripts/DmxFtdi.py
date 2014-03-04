@@ -1,6 +1,6 @@
 import ftdi, sys
 
-DMX_DATA_LENGTH = 9 # depending on the number of channels needed for the DMX device
+DMX_DATA_LENGTH = 9 # depending on the number of channels needed for the DMX device; max. 512
 START_CODE = chr(0) # start code of DMX protocol
 
 class DmxFtdi:
@@ -47,11 +47,11 @@ class DmxFtdi:
             self.buffer = bytearray(DMX_DATA_LENGTH)
 
         def send(self):
-            #toogle BREAK on line
+            #toogle BREAK on line as required by the DMX standard
             ftdi.ftdi_set_line_property2(self.ftdic,8,2,0,0)
             ftdi.ftdi_set_line_property2(self.ftdic,8,2,0,1)
             ftdi.ftdi_set_line_property(self.ftdic,8,2,0) # without this additional command nothing is sent out. Bug in ftdi class?
-            # convert buffer to string and add STAR_CODE
-            payload = STAR_CODE + str(self.buffer)
+            # convert buffer to string and add START_CODE
+            payload = START_CODE + str(self.buffer)
             #print sdata.encode("hex")
             ftdi.ftdi_write_data(self.ftdic,payload,DMX_DATA_LENGTH+1)
