@@ -1,5 +1,4 @@
-from DmxPro import DmxPro
+from Laser import Laser_Stairville__150_RGY
 
-dmx = DmxPro('/dev/ttyUSB0')
-dmx.clearChannels()
-dmx.send()
+L = Laser_Stairville__150_RGY(0)
+L.Stop()
