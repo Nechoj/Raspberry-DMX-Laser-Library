@@ -4,6 +4,7 @@ class Laser_Stairville__150_RGY: # for each laser model define such a class
 
      def __init__(self, offset=0): # most DMX devices allow for configuring an offset within the 512 DMX channels
         self.dmx = DmxPro('/dev/ttyUSB0')
+        
         self.offset = offset
         
         self.max_left = 94 # x-channel value for leftmost position

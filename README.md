@@ -79,7 +79,7 @@ Files (*.html, *.py etc.) are transferred via sftp directly into the www root di
 
 ##Python scripts controlling the laser head
 
-There are two Python scripts controlling the laser head: First script (scripts/laser_xy.py) directs the laser beam to a certain position. The second scripts turns the laser off (scripts/laser_stop.py). Both scripts import the script Laser.py, which contains thelaser model specific settings. The scripts can be used directly on the shell command line of the Raspberry Pi as follows
+There are two Python scripts controlling the laser head: First script (scripts/laser_xy.py) directs the laser beam to a certain position. The second scripts turns the laser off (scripts/laser_stop.py). Both scripts import the script Laser.py, which contains the laser model specific settings. The scripts can be used directly on the shell command line of the Raspberry Pi as follows
 
     > cd /home/pi/www/scripts
     > python laser_xy.py -x nx -y ny (nx, ny: allowed numbers 0...127 for my laser head)
