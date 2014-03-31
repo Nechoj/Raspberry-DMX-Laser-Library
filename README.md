@@ -29,7 +29,7 @@ Remark: The power supply of 5V / 1.2A is good enough to power the DMX USB interf
 
 * Raspbian Linux , kernel version 3.10.25+ (downloaded from the official raspberrypi.org site on February 2014)
 * LAMP stack
-* Python with extension python-serial (and python-ftdi if you want to use the DmxFtdi.py driver, see above)
+* Python with extension python-serial and phython-numpy (and python-ftdi if you want to use the DmxFtdi.py driver, see above)
 
 Installing the LAMP stack (well, Linux seems to be installed already ;-)):
 
@@ -38,7 +38,7 @@ Installing the LAMP stack (well, Linux seems to be installed already ;-)):
 
 Installing the Python extension (python-ftdi needed only for the ENTTEC Open DMX USB device):
 
-    > sudo apt-get install python-seriel (python-ftdi)
+    > sudo apt-get install python-seriel python-numpy (python-ftdi)
 
 ##System configuration
 
