@@ -1,5 +1,4 @@
 import MySQLdb
-import sys
 
 class Parameter:
     def __init__(self):
@@ -108,7 +107,6 @@ class Parameter:
                 db.commit()
             else:
                 print "parameter type not supported"
-                sys.exit(1)
         else: # parameter already there
             cur.execute("UPDATE parameters SET parameters.value = %s WHERE name = %s", (p_value, p_name))
             db.commit()
