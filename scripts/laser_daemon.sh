@@ -16,20 +16,22 @@
 
 case "$1" in
   start)
-    echo "Starting server"
+    echo "Starting laser_daemon"
     # Start the daemon
-    #sudo -u pi /home/pi/www/scripts/laser_daemon.py start
     sudo /home/pi/www/scripts/laser_daemon.py > /dev/null 2> /dev/null &
     ;;
   stop)
-    echo "Stopping server"
-    # Stop the daemon using the source file written by laser_daemon.py
+    echo "Stopping laser_daemon"
+    # Stop the daemon using the shell script written by laser_daemon.py during __init__
     sudo /tmp/laser_daemon_stop
+    # Deactivate the python virtual environment
     deactivate
     ;;
   restart)
-    echo "Restarting server"
-    #sudo -u pi /home/pi/www/scripts/laser_daemon.py restart
+    echo "Restarting laser_daemon"
+    sudo /tmp/laser_daemon_stop
+    sleep 5
+    sudo /home/pi/www/scripts/laser_daemon.py > /dev/null 2> /dev/null &
     ;;
   *)
     # Refuse to do other stuff
