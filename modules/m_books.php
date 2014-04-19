@@ -1,7 +1,5 @@
 <?PHP
-/* ths modules manages the books table and
-calculates the x and y coordinates of the laser
-from the position of the book in the shelf
+/* ths modules manages the books table
   
 the layout of the table books in DB laser is:
 
@@ -220,7 +218,8 @@ function laser_to_position($row, $dist){
 
 
 function zotero_sync(){
-// function to fetch and read out the zotero db file zotero.sqlite and stores the entries in the books db
+// function to fetch and read out the zotero db file zotero.sqlite and stores the entries in the mysql books db
+// (note: the zotero.sqlite db can not be used directly as performance over the network is poor)
     
     // get new sqlite-file from zotero cloud server
     $ftp_server = "192.168.178.2";
