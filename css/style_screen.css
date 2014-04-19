@@ -1,20 +1,110 @@
 /* Style Sheet */
+html{
+  height: 100%;
+}
+
 body
 {
     color:#000;
     background-color:#FFF;
-    font-size:120%;
     font-family:Helvetica,Arial,sans-serif;
-    margin-left:1em;
+    min-height: 100%;
 }
 
-h3
-{
+.wait, .wait *{
+    cursor:wait !important;
+}
+
+/* LAYOUT */
+div.layoutPage {
+    font-size:120%;
+}
+
+div.layoutPageHead {
+	margin: 0px 4px 4px 4px;
+    width: 100%;
+/*	width: 954px; */
+}
+
+div.layoutPageBody {
+	clear: left;
+	margin: 0px 4px 0 12px;
+    width: 100%;
+}
+
+div.layoutPageFoot {
+  	background: #FFFFFF;
+	overflow: hidden;
+/*	padding-bottom: 140px; */
+	position: relative;
+	width: 100%;
+}
+
+/* LOGO */
+div.globalLogo {
+	margin: 0px 0px 1px 0px;
+    font-size: 130%;
+}
+.left{
+	float: left;
+}
+.right{
+	float: right;
+}
+
+/* MAIN NAVIGATION */
+div.globalNavigationMain {
+	clear: left;
+	float: left;
+	margin-bottom: 4px;
+	padding-bottom: 5px;
+	width: 100%;
+}
+* html div.globalNavigationMain {
+  	margin-bottom: 0px;
+}
+div.globalNavigationMain h2 {
+	display: none;
+}
+div.globalNavigationMain ul {
+	background: #db0031;
+	float: left;
+	position: relative;
+	width: 100%;
+	list-style-image: none;
+	list-style-type: none;
+}
+
+div.globalNavigationMain ul li {
+	float: left;
+}
+div.globalNavigationMain ul li a {
+	color: #FFF;
+	display: block;
+	font-size: 100%;
+	/* line-height: 27px; */
+	text-decoration: none;
+    border-right: 1px solid #ffffff;
+	padding-right: 1em;
+    padding-left: 1em;
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+}
+
+div.globalNavigationMain ul li a:hover {
+	background: #9999cc;
+}
+div.globalNavigationMain ul li.active a {
+	background: #ccccff;
+	color: #685c53;
+	cursor: default;
+}
+
+h3{
     color:teal;
 }
 
-.Inputfield1 /* for numbers */
-{
+.Inputfield1{ /* for numbers */
     text-align:right;
     font-size:100%;
     height:1.2em;
@@ -22,8 +112,7 @@ h3
     padding-right:1em;
 }
 
-.Inputfield2 /* for text */
-{
+.Inputfield2{ /* for text */
     text-align:left;
     font-size:100%;
     height:1.2em;
@@ -31,8 +120,7 @@ h3
     padding-right:1em;
 }
 
-.DropDown
-{
+.DropDown{
     text-align:left;
     font-size:100%;
     min-width:8em;
@@ -40,16 +128,14 @@ h3
     padding:.2em;
 }
 
-.Button
-{
+.Button{
     text-align:center;
     font-size:100%;
     height:2em;
     width: 8em;
 }
 
-.Message
-{
+.Message{
     color:red;
-    font-size:1.5em;
+    font-size:1.2em;
 }

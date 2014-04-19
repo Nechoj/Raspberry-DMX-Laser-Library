@@ -1,6 +1,15 @@
 /* Style Sheet for handhelds*/
 
-h1 /* red headline to see whether handheld style is applied */
+div.layoutPage {
+    font-size:100%;
+}
+
+div.globalNavigationMain ul li a {
+	padding-right: 0.5em;
+    padding-left: 0.5em;
+}
+
+h2 /* red headline to see whether handheld style is applied */
 {
     color:red;
 }
@@ -13,4 +22,14 @@ h1 /* red headline to see whether handheld style is applied */
 .DropDown
 {
     width:100%;
+    margin-right: 1em;
+}
+
+.Inputfield2{ /* for text */
+    width:100%;
+    margin-right: 1em;
+}
+
+.Inputfield1{ /* for numbers */
+    width:25%;
 }
