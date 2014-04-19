@@ -1,7 +1,7 @@
 from optparse import OptionParser
-from Laser import Laser_Stairville__150_RGY
+from Laser import LaserManagement
 
-L = Laser_Stairville__150_RGY(0)
+LM = LaserManagement()
 
 #option parser
 parser = OptionParser()
@@ -13,4 +13,4 @@ x = int(options.x)
 y = int(options.y)
 
 # move laser to position
-L.Move(x,y)
+LM.Move(x,y)

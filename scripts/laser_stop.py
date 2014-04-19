@@ -1,4 +1,4 @@
-from Laser import Laser_Stairville__150_RGY
+from Laser import LaserManagement
 
-L = Laser_Stairville__150_RGY(0)
-L.Stop()
+LM = LaserManagement()
+LM.Stop()
