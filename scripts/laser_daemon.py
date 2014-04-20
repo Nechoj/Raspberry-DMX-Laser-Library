@@ -23,6 +23,7 @@ class App():
         self.shutdownflag = False
         
         self.C = Calibration()
+        self.C.LM.SetBeamWidth(10)
         
         # initialising parameters
         self.C.P.StoreParameter("Action", "done", "string")

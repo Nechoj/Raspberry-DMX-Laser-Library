@@ -18,6 +18,11 @@ class Camera:
         # default values for PiCamera
         self.best_brightness = 50
         self.best_exposure_compensation = 0
+        
+        # angular camera resolution in rad per pixel (near center of image)
+        # this parameter has been calculated from the measured reference dx value (px per cm) and the distance to the camera
+        # a new distance is then calculated with 1/(dx*tan(self.alpha))
+        self.dalpha = 5.203831969919e-4 
 
     def SetBrightness(self, p_brightness):
         # function to override automatic calibration values
@@ -162,6 +167,12 @@ class Calibration:
         # dx, dy for physical coordinates: 'pixels per cm' in warped image
         self.dx = self.P.GetParameter("dx")
         self.dy = self.P.GetParameter("dy")
+        # distance between camera and shelves in cm
+        p = self.P.GetParameter("distance")
+        if p == None:
+            self.distance = 400
+        else:
+            self.distance = p
         
         # matrix for mapping warped px,py to real world cm
         self.matCM = np.zeros((3,3), np.float32)
@@ -185,6 +196,8 @@ class Calibration:
                 else:
                     self.matCMtoL[i,j] = p   
                     
+    def __del__(self):
+        self.Cam.Close()  
         
     def CalibrateBrightness(self, control=False, color="none", width=640, height=480):         
          """this function sets the brightness so that the laser beam is the brightest signal in the image.
@@ -208,11 +221,11 @@ class Calibration:
             else:
                 gimg = self.CropImg(self.Cam.img) # crop image            
                 hist = np.bincount(gimg.ravel(),minlength=256) # optimise on all channels
-                if hist[255] < 2*max_255_pixels:
+                if hist[255] < 2*max_255:
                     break 
                     
          # second round: step 1         
-         for bb in xrange(b+9,b,-1):
+         for bb in xrange(b+9,b-1,-1):
             self.Cam.SetBrightness(bb)
             self.Cam.QueryImage(width,height)
             if color == "green": # make sure green laser is turned on! 
@@ -234,7 +247,7 @@ class Calibration:
          
          # third round: find optimal camera.exposure_compensation
          # optimise on number of laser spot contours found
-         for c in xrange(0,-25,-1):
+         for c in xrange(10,-25,-1):
             self.Cam.SetExposureCompensation(c)
             self.Cam.QueryImage(width,height)
             simg = cv2.split(self.Cam.img)
@@ -708,14 +721,19 @@ class Calibration:
         y_coord = np.sort(corners[:,0,1])
         self.dx = (np.average(x_coord[-4]) - np.average(x_coord[:3]))/25.0 # px per 1cm
         self.dy = (np.average(y_coord[-4]) - np.average(y_coord[:3]))/15.0 # py per 1cm
+
+        # calcualte distance of shelves in cm
+        self.distance = 1.0 / self.dx / np.tan(self.Cam.dalpha)
         
         if control == True:
-            print self.dx, "px pro cm"
-            print self.dy, "py pro cm"
+            print "dx:", self.dx, "px pro cm"
+            print "dy:", self.dy, "py pro cm"
+            print "distance:", self.distance, "cm"
         
         # store values in database
         self.P.StoreParameter("dx", str(self.dx), "double")
         self.P.StoreParameter("dy", str(self.dy), "double")
+        self.P.StoreParameter("distance", str(self.distance), "double")
         
         # matrix for mapping warped px,px coordinates to real world cm (x = distance from left border and y = distance from bottom shelf)
         self.matCM[0,0] = 1/self.dx
@@ -745,10 +763,11 @@ class Calibration:
         return int(points[0]), int(points[1])
         
         
-    def GetLaserPosition(self, control=False, threshold=251, width=1920, height=1080):               
-        """returns the dist_x, dist_y coordinates of the laser position, or None"""
+    def GetLaserPosition(self, beamwidth, control=False, threshold=251, width=1920, height=1080):               
+        """ parameter beamwidth is laser width in cm.
+            Returns the dist_x, dist_y coordinates of the laser position, or None"""
         
-        min_length = int(0.3*self.book_height*height) # min width of laser beam on that picture     
+        min_length = int(0.6*beamwidth*self.dx) # 60% of laser beam in pixel
         if control == True:
             print "min_length: ", min_length
         
@@ -822,6 +841,9 @@ class Calibration:
         """Determines the matrix mapping real world x_dist, y_dist coordinates onto Lx,Ly-values for the laser positions.
         Returns True, if successful, otherwise False.""" 
         
+        beamwidth = 15 # width of laser beam in cm
+        self.LM.SetBeamWidth(15)
+        
         max_left, max_right, max_top, max_bottom = self.LM.GetMaxChannels(laser)
         if max_left > max_right:
             max_left, max_right = max_right, max_left
@@ -835,7 +857,7 @@ class Calibration:
             Lx = randrange(max_left, max_right, 1)
             Ly = randrange(max_top, max_bottom, 1)
             self.LM.Move(Lx,Ly)
-            dist_x, dist_y = self.GetLaserPosition(False,251,width,height)
+            dist_x, dist_y = self.GetLaserPosition(beamwidth,False,251,width,height)
             if dist_y != None:
                 src.append([dist_x,dist_y])
                 dst.append([Lx,Ly])
