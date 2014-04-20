@@ -81,7 +81,7 @@
           </p>
           <p>
             Check whether laser is pointing to the requested book.<br />
-            If not, try automatic detection again, or, change row and distance manually
+            If not, try automatic detection again, or, change row and position manually
           </p>
           <p>
             <input type="submit" name="button_test" class="Button" value="test position" /> <input type="submit" name="button_off" class="Button" value="laser off" />

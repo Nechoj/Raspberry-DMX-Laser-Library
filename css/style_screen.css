@@ -1,6 +1,10 @@
 /* Style Sheet */
 html{
-  height: 100%;
+    height: 100%; /* makes the wait cursor appear over the whole window */
+}
+
+.wait, .wait *{
+    cursor:wait !important;
 }
 
 body
@@ -11,13 +15,9 @@ body
     min-height: 100%;
 }
 
-.wait, .wait *{
-    cursor:wait !important;
-}
-
 /* LAYOUT */
 div.layoutPage {
-    font-size:120%;
+    font-size:110%;
 }
 
 div.layoutPageHead {
@@ -28,7 +28,7 @@ div.layoutPageHead {
 
 div.layoutPageBody {
 	clear: left;
-	margin: 0px 4px 0 12px;
+	margin: 0px 4px 0 4px;
     width: 100%;
 }
 
@@ -56,28 +56,28 @@ div.globalLogo {
 div.globalNavigationMain {
 	clear: left;
 	float: left;
+    margin-left: 0px;
 	margin-bottom: 4px;
 	padding-bottom: 5px;
 	width: 100%;
 }
+
 * html div.globalNavigationMain {
   	margin-bottom: 0px;
 }
-div.globalNavigationMain h2 {
-	display: none;
-}
+
 div.globalNavigationMain ul {
 	background: #db0031;
 	float: left;
-	position: relative;
 	width: 100%;
 	list-style-image: none;
 	list-style-type: none;
 }
 
 div.globalNavigationMain ul li {
-	float: left;
+	float: left;  
 }
+
 div.globalNavigationMain ul li a {
 	color: #FFF;
 	display: block;
@@ -85,8 +85,8 @@ div.globalNavigationMain ul li a {
 	/* line-height: 27px; */
 	text-decoration: none;
     border-right: 1px solid #ffffff;
-	padding-right: 1em;
-    padding-left: 1em;
+	padding-right: 0.5em;
+    padding-left: 0.5em;
     padding-top: 0.2em;
     padding-bottom: 0.2em;
 }

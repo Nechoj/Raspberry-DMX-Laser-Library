@@ -441,7 +441,7 @@ class Calibration:
         self.cx_left = max(0.0, np.amin(books[:,0])/float(width) - 0.5*self.book_height) # take 50% book_height as reserve
         books_right = books[:,0]+books[:,2]
         self.cx_width = min(1.0, np.amax(books_right)/float(width) + 0.5*self.book_height)
-        self.cy_top = max(0.0, min(self.shelves_ab[0,1]+self.shelves_ab[0,2]*self.cx_left, self.shelves_ab[0,1]+self.shelves_ab[0,2]*self.cx_width) - self.book_height)
+        self.cy_top = max(0.0, min(self.shelves_ab[0,1]+self.shelves_ab[0,2]*self.cx_left, self.shelves_ab[0,1]+self.shelves_ab[0,2]*self.cx_width) - 1.3*self.book_height)
         nsh = len(self.shelves_ab)-1 # index for bottom shelf
         self.cy_height = min(1.0, max(self.shelves_ab[nsh,1]+self.shelves_ab[nsh,2]*self.cx_left, self.shelves_ab[nsh,1]+self.shelves_ab[nsh,2]*self.cx_width))
 
@@ -455,25 +455,23 @@ class Calibration:
         self.P.StoreParameter("cx_width", str(self.cx_width), "double")
             
         if control == True:
-            cv2.imwrite("/home/pi/www/images/test_shelves.jpg",self.Cam.img)
+            cv2.imwrite("/home/pi/www/images/FindShelves.jpg",self.Cam.img)
         
         return self.no_of_shelves
         
     
-    def FindBorders(self, control=False, width=1920, height=1080):
+    def FindBorders(self, control=False, canny_thres = 10, width=1920, height=1080):
         """searches for vertical borders of shelves. Returns True if succesful, False otherwiese"""
                         
-        # take image, convert to gray
-        self.Cam.SetBrightness(50) # restore default value       
+        # take image, convert to gray  
         self.Cam.QueryImage(width,height)         
         gray = cv2.cvtColor(self.Cam.img,cv2.COLOR_BGR2GRAY) # convert to gray image
         Crop = self.GetCropValues(width, height)
 
         # require some min height and max skewness of vertical lines
         min_length = 3.0*self.book_height*height
-        maxLineGap = 0.2*self.book_height*height
+        maxLineGap = 0.1*self.book_height*height
         max_skew = 0.2*min_length
-        canny_thres = 17
         
         if control == True:
             print "searching for left borders ..."
@@ -495,7 +493,7 @@ class Calibration:
         if control == True:
             for b in borders_left:
                 cv2.line(gimg,(b[0],b[1]),(b[2],b[3]),255,2)
-            cv2.imwrite("/home/pi/www/images/test_borders_left.jpg",gimg)  
+            cv2.imwrite("/home/pi/www/images/FindBorders_left.jpg",gimg)  
         
         if control == True:
             print "searching for right borders ..."
@@ -517,7 +515,7 @@ class Calibration:
         if control == True:
             for b in borders_right:
                 cv2.line(gimg,(b[0],b[1]),(b[2],b[3]),255,2)
-            cv2.imwrite("/home/pi/www/images/test_borders_right.jpg",gimg)  
+            cv2.imwrite("/home/pi/www/images/FindBorders_right.jpg",gimg)  
         
         # calculate straight lines representing the borders of the shelves 
         intercept = [] # array to store intercepts of  border lines
@@ -562,7 +560,7 @@ class Calibration:
             print "borders_ab right:", self.borders_ab[1,:]
             cv2.line(self.Cam.img,(int(self.borders_ab[0,1]*width),0), (int(self.borders_ab[0,1]*width + height*self.borders_ab[0,2]*width/height),height),(0,0,255),2)
             cv2.line(self.Cam.img,(int(self.borders_ab[1,1]*width),0), (int(self.borders_ab[1,1]*width + height*self.borders_ab[1,2]*width/height),height),(0,0,255),2)
-            cv2.imwrite("/home/pi/www/images/test_borders.jpg",self.Cam.img)
+            cv2.imwrite("/home/pi/www/images/FindBorders.jpg",self.Cam.img)
             
         # store values in database
         self.P.StoreParameter("borders_a_left", str(self.borders_ab[0,1]), "double")
@@ -661,7 +659,7 @@ class Calibration:
             cv2.line(self.Cam.img,(p_dst[1,0],p_dst[1,1]), (p_dst[2,0],p_dst[2,1]),(0,255,255),2)
             cv2.line(self.Cam.img,(p_dst[2,0],p_dst[2,1]), (p_dst[3,0],p_dst[3,1]),(0,255,255),2)
             cv2.line(self.Cam.img,(p_dst[3,0],p_dst[3,1]), (p_dst[0,0],p_dst[0,1]),(0,255,255),2)
-            cv2.imwrite("/home/pi/www/images/test_matrix.jpg",self.Cam.img)
+            cv2.imwrite("/home/pi/www/images/CalculateWarpMatrix.jpg",self.Cam.img)
             
         # calculation of matrix
         self.matWarp = cv2.getPerspectiveTransform(p_src, p_dst)
@@ -767,8 +765,8 @@ class Calibration:
         # assuming that function CalibrateBrightness has been called before, the laser should have intensity 253...255 on the green channel 
         ret, dst = cv2.threshold(gimg, threshold, 255, cv2.THRESH_BINARY) # only keep the brightest pixels        
         if control == True:
-            cv2.imwrite("/home/pi/www/images/threshold.jpg",dst)
-            cv2.imwrite("/home/pi/www/images/test_laser_gimg.jpg",gimg)
+            cv2.imwrite("/home/pi/www/images/GetLaserThreshold.jpg",dst)
+            cv2.imwrite("/home/pi/www/images/GetLaserGimg.jpg",gimg)
         
         # detect contours
         contours, hierarchy = cv2.findContours( dst, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -803,7 +801,7 @@ class Calibration:
                     brx = points[2]
                     bry = points[3]
                     cv2.rectangle(self.Cam.img,(tlx,tly),(brx,bry),(0,0,255),2) 
-                    cv2.imwrite("/home/pi/www/images/test_laser.jpg",self.Cam.img) 
+                    cv2.imwrite("/home/pi/www/images/GetLaserPosition.jpg",self.Cam.img) 
                 # center of rectangle:
                 dist_x = (b[0] + b[2]/2)/self.dx
                 dist_y = (Crop[1]-Crop[0] - (b[1] + b[3]/2))/self.dy
@@ -935,7 +933,7 @@ class Calibration:
         
         if step == 2:
             # read previous picture and corresponding time-stamp
-            gimg1 = cv2.imread("/home/pi/www/images/missing_book.jpg", 0)
+            gimg1 = cv2.imread("/home/pi/www/images/detect_book.jpg", 0)
             last_img_time = self.P.GetParameter("last_img_time")
         
         # take new picture
@@ -945,7 +943,7 @@ class Calibration:
         gimg2 = self.CropImg(gimg) # crop image
         
         # store new picture as the next previous picture and store actual date-time in database
-        cv2.imwrite("/home/pi/www/images/missing_book.jpg",gimg2)        
+        cv2.imwrite("/home/pi/www/images/detect_book.jpg",gimg2)        
         self.P.StoreParameter("last_img_time", str(time.time()), "double")
         
         if step == 1: # nothing else to do
@@ -966,7 +964,7 @@ class Calibration:
         ret, threshold_output = cv2.threshold(gimg, 30, 255, cv2.THRESH_BINARY)
         #threshold_output = cv2.adaptiveThreshold(gimg, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 2)
         if control == True:
-            cv2.imwrite("/home/pi/www/images/test_book_threshold.jpg",threshold_output) 
+            cv2.imwrite("/home/pi/www/images/MissingBook_threshold.jpg",threshold_output) 
             
         # detect contours
         contours, hierarchy = cv2.findContours( threshold_output, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -996,9 +994,9 @@ class Calibration:
                     if control == True:
                         print "rect:", br            
                         cv2.rectangle(self.Cam.img,(tlx,tly),(brx,bry),(255,255,255),2) 
-                        cv2.imwrite("/home/pi/www/images/test_book.jpg",self.Cam.img)
+                        cv2.imwrite("/home/pi/www/images/MissingBook.jpg",self.Cam.img)
                         cv2.rectangle(gimg2,(br[0],br[1]),(br[0]+br[2],br[1]+br[3]),255,2)
-                        cv2.imwrite("/home/pi/www/images/test_book_gimg.jpg",gimg2)  
+                        cv2.imwrite("/home/pi/www/images/MissingBookGimg.jpg",gimg2)  
                     dist_x, dist_y = self.Convert_PtoCM(int((tlx+brx)/2),int((bry+tly)/2))  # center of book
                     row = self.Convert_PtoShelf(int((tlx+brx)/2), int((bry+tly)/2))
                     return dist_x, dist_y, row
