@@ -74,8 +74,7 @@ function delete_book($bookID){
     $result = mysql_query($query) or die('Query failed 4: ' . mysql_error());
     $dbrow = mysql_fetch_row($result); // first occurance of parameter only (1st row in $result)
     if(!$dbrow){ // parameter not found
-        echo "book not in database";
-        exit(1);
+        return "book not in database";
     }
     // delete parameter
     $query = "DELETE FROM books WHERE bookID = '$bookID'";
@@ -83,6 +82,7 @@ function delete_book($bookID){
     
     // Closing connection
     mysql_close($link);
+    return "book deleted";
 }
 
 function book_select($bookID = 0, $with_position = False){
@@ -155,6 +155,7 @@ function set_location($bookID, $row, $position){
     
     // Closing connection
     mysql_close($link);
+    return "location set";
 }
 
 

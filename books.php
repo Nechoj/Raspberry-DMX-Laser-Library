@@ -105,10 +105,10 @@
           </p>
           <p>
             <input type="submit" name="button_store" class="Button" value="add book" />
-                    <div class="Message">
-                        <?php echo $message1; ?>
-                    </div>
           </p>
+          <div class="Message">
+            <?php echo $message1; ?>
+          </div>          
         </form>
         
         <hr />  
@@ -150,10 +150,10 @@
           </p>
           <p>
             <input type="submit" name="button3" class="Button" value="get location" /><input type="submit" name="button4" class="Button" value="set location" />
-                    <div class="Message">
-                        <?php echo $message2; ?>
-                    </div>
           </p>
+          <div class="Message">
+            <?php echo $message2; ?>
+          </div>          
         </form>
         
         <hr />        
@@ -162,8 +162,7 @@
         <?php
             if (isset($_REQUEST["button2"])){ // if button2 was clicked on: create
                 $bookID = substr($_POST['books1'], 2);
-                delete_book($bookID);
-                $message3 = "book deleted";
+                $message3 = delete_book($bookID);
             }
         ?>        
         <form action="<?php echo $_SERVER['PHP_SELF']. '#delete_book'; ?>" method="post">
@@ -174,10 +173,10 @@
           </p>
           <p>
             <input type="submit" name="button2" class="Button" value="delete" />
-                    <div class="Message">
-                        <?php echo $message3; ?>
-                    </div>
           </p>
+          <div class="Message">
+            <?php echo $message3; ?>
+          </div>          
         </form>
         <div style="height:50em"></div> <!-- this allows to scoll down until 'Delete Book' section is top lined -->
       </div>
