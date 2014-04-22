@@ -5,6 +5,7 @@
   error_reporting (E_ALL | E_STRICT);
   ini_set ('display_errors' , 1);
 
+  include 'modules/m_menu.php';
   include 'modules/m_books.php';
   $message = "";
 ?>
@@ -26,20 +27,7 @@
         </div>
       </div>
       <div class="globalNavigationMain">
-        <ul>
-          <li>
-            <a href="index.php">Find Book</a>
-          </li>
-          <li class="active">
-            <a href="register_books.php">Detect Book</a>
-          </li>
-          <li>
-            <a href="add_book.php">Add Book</a>
-          </li>
-          <li>
-            <a href="books.php">Manage Books</a>
-          </li>
-        </ul>
+        <?php create_menu(); ?>
       </div>
       <div class="layoutPageBody">
         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
@@ -66,11 +54,11 @@
             $row = get_parameter("row");
             if ($row==0){
                 echo "\n<p>Book position not detected - try again, or, continue and enter book position data manually</p>\n";
-                echo "<form action='add_book.php' method='get'>\n";
+                echo "<form action='books.php' method='get'>\n";
                 echo "<p><input type='submit' name='button_continue' class='Button' value='Continue'/></p>\n";
                 echo "</form>\n";
             }else{
-                header('Location: /add_book.php');
+                header('Location: /books.php');
                 exit;
             }
         }

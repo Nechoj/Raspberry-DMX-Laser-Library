@@ -473,32 +473,52 @@ class Calibration:
         return self.no_of_shelves
         
     
-    def FindBorders(self, control=False, canny_thres = 10, width=1920, height=1080):
+    def FindBorders(self, control=False, width=1920, height=1080):
         """searches for vertical borders of shelves. Returns True if succesful, False otherwiese"""
                         
-        # take image, convert to gray  
-        self.Cam.QueryImage(width,height)         
-        gray = cv2.cvtColor(self.Cam.img,cv2.COLOR_BGR2GRAY) # convert to gray image
-        Crop = self.GetCropValues(width, height)
-
         # require some min height and max skewness of vertical lines
         min_length = 3.0*self.book_height*height
         maxLineGap = 0.1*self.book_height*height
         max_skew = 0.2*min_length
+        # determine the best canny threshold: number of detected long vertical lines > lines_requested
+        lines_requested = 3        
         
         if control == True:
-            print "searching for left borders ..."
-            
-        gimg = gray[Crop[0]:Crop[1],int(Crop[2]-0.5*self.book_height*width):int(Crop[2]+self.book_height*width)] # crop image                                       
-        canny_output = cv2.Canny(gimg,canny_thres,3*canny_thres,apertureSize = 3)
-        lines = cv2.HoughLinesP(canny_output,1,np.pi/180,90,None,min_length,maxLineGap) # hough lines detection
+            print "searching for at least ", lines_requested, "left border lines ..."
         
-        borders_left = []
-        if lines != None:
-            for l in lines[0]: 
-                if( abs(l[2]-l[0]) < max_skew ): # filtering for potential vertical borders        
-                    borders_left.append(l)
-        else:
+        canny_thres = 53 # start value
+        round = 1 # first round will be with step = -5, then use step = -1
+        step = -10
+        for i in range(canny_thres): # max steps needed
+            if control == True:
+                print "testing canny_thres", canny_thres           
+            borders_left = []
+            self.Cam.QueryImage(width,height)         
+            gray = cv2.cvtColor(self.Cam.img,cv2.COLOR_BGR2GRAY) # convert to gray image
+            Crop = self.GetCropValues(width, height)
+            gimg = gray[Crop[0]:Crop[1],int(Crop[2]-0.5*self.book_height*width):int(Crop[2]+self.book_height*width)] # crop image                                       
+            canny_output = cv2.Canny(gimg,canny_thres,3*canny_thres,apertureSize = 3)
+            lines = cv2.HoughLinesP(canny_output,1,np.pi/180,90,None,min_length,maxLineGap) # hough lines detection        
+            
+            if lines != None:
+                for l in lines[0]: 
+                    if( abs(l[2]-l[0]) < max_skew ): # filtering for potential vertical borders        
+                        borders_left.append(l)
+                if len(borders_left) >= lines_requested:
+                    if round == 1:
+                        canny_thres = canny_thres - step # go back and use finer steps
+                        step = -1 # reduce step size
+                        round = 2
+                    else:
+                        break # best canny_thres found
+            
+            if canny_thres > 1:
+                canny_thres += step
+            else:
+                return False # something went wrong ...
+        
+
+        if len(borders_left) == 0:
             if control == True:
                 print "no left border lines found"
             return False
@@ -509,18 +529,41 @@ class Calibration:
             cv2.imwrite("/home/pi/www/images/FindBorders_left.jpg",gimg)  
         
         if control == True:
-            print "searching for right borders ..."
+            print "searching for at least ", lines_requested, "right border lines ..."
+
+        canny_thres = 53 # start value
+        round = 1 # first round will be with step = -5, then use step = -1
+        step = -10
+        for i in range(canny_thres): # max steps needed 
+            if control == True:
+                print "testing canny_thres", canny_thres         
+            borders_right = []
+            self.Cam.QueryImage(width,height)         
+            gray = cv2.cvtColor(self.Cam.img,cv2.COLOR_BGR2GRAY) # convert to gray image
+            Crop = self.GetCropValues(width, height)
+            gimg = gray[Crop[0]:Crop[1],int(Crop[3]-self.book_height*width):int(Crop[3]+0.5*self.book_height*width)] # crop image                            
+            canny_output = cv2.Canny(gimg,canny_thres,3*canny_thres,apertureSize = 3)
+            lines = cv2.HoughLinesP(canny_output,1,np.pi/180,90,None,min_length,maxLineGap) # hough lines detection        
             
-        gimg = gray[Crop[0]:Crop[1],int(Crop[3]-self.book_height*width):int(Crop[3]+0.5*self.book_height*width)] # crop image                                       
-        canny_output = cv2.Canny(gimg,canny_thres,3*canny_thres,apertureSize = 3)
-        lines = cv2.HoughLinesP(canny_output,1,np.pi/180,90,None,min_length,maxLineGap) # hough lines detection
+            if lines != None:
+                for l in lines[0]: 
+                    if( abs(l[2]-l[0]) < max_skew ): # filtering for potential vertical borders        
+                        borders_right.append(l)
+                if len(borders_right) >= lines_requested:
+                    if round == 1:
+                        canny_thres = canny_thres - step # go back and use finer steps
+                        step = -1 # reduce step size
+                        round = 2
+                    else:
+                        break # best canny_thres found
+            
+            if canny_thres > 1:
+                canny_thres += step
+            else:
+                return False # something went wrong ...
         
-        borders_right = []
-        if lines != None:
-            for l in lines[0]: 
-                if( abs(l[2]-l[0]) < max_skew ): # filtering for potential vertical borders        
-                    borders_right.append(l) 
-        else:
+
+        if len(borders_right) == 0:            
             if control == True:
                 print "no right border lines found"
             return False
@@ -841,8 +884,8 @@ class Calibration:
         """Determines the matrix mapping real world x_dist, y_dist coordinates onto Lx,Ly-values for the laser positions.
         Returns True, if successful, otherwise False.""" 
         
-        beamwidth = 15 # width of laser beam in cm
-        self.LM.SetBeamWidth(15)
+        beamwidth = 10 # width of laser beam in cm
+        self.LM.SetBeamWidth(beamwidth)
         
         max_left, max_right, max_top, max_bottom = self.LM.GetMaxChannels(laser)
         if max_left > max_right:

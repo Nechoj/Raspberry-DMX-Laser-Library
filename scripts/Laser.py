@@ -64,9 +64,9 @@ class Laser_Stairville__150_RGY: # for each laser model define such a class
         # Assumes that parameter self.distance has been set correctly
         alpha = 2*np.arctan(float(width)/2.0/self.distance)
         # the following mathematical function for the zoom needs to be derived in an experiment with this laser
-        zoom = int(-101331*alpha**3 + 16859*alpha**2 - 1209.1*alpha + 138.6)
-        if zoom > 127:
-            zoom = 127
+        zoom = int(16262*alpha**3 - 230.2*alpha**2 - 464.96*alpha + 129.02) 
+        if zoom > 122:
+            zoom = 122
         if zoom < 0:
             zoom = 0
         self.SetZoom(zoom)

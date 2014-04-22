@@ -1,9 +1,10 @@
 from CVision import Calibration
 import time
 from optparse import OptionParser
+import subprocess
 
 # important: laser_daemon must nit running when using this script!
-# sudo service laser_daemon.sh stop
+subprocess.call("sudo service laser_daemon.sh stop", shell=True)
 
 #option parser
 parser = OptionParser()
@@ -25,7 +26,7 @@ C.LM.Stop()
 if s==1:
     print C.FindShelves(control=True)
 if s==2:    
-    print C.FindBorders(control=True, canny_thres = c)
+    print C.FindBorders(control=True)
 if s==3:
     print C.CalculateWarpMatrix(control=True)
 if s==4:

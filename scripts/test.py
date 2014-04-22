@@ -3,7 +3,7 @@ import time
 
 C = Calibration()
 
-beamwidth = 15
+beamwidth = 10
 C.LM.SetBeamWidth(beamwidth)
 C.LM.Move(70,80)
 C.CalibrateBrightness(control=True, color="green")

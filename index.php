@@ -6,6 +6,7 @@
   ini_set ('display_errors' , 1);
 
   include 'modules/m_books.php';
+  include 'modules/m_menu.php';
   $message = "";
 ?>    
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
@@ -25,20 +26,7 @@
         </div>
       </div>
       <div class="globalNavigationMain">
-        <ul>
-          <li class="active">
-            <a href="index.php">Find Book</a>
-          </li>
-          <li>
-            <a href="register_books.php">Detect Book</a>
-          </li>
-          <li>
-            <a href="add_book.php">Add Book</a>
-          </li>
-          <li>
-            <a href="books.php">Manage Books</a>
-          </li>
-        </ul>
+        <?php create_menu(); ?>
       </div>
       <div class="layoutPageBody">
         <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
