@@ -15,14 +15,21 @@ class App():
         # store kill command with PID in a shell skript
         self.tmpfile = "/tmp/laser_daemon_stop"
         PID = os.getpid()  
-        fd = os.open(self.tmpfile,os.O_RDWR|os.O_CREAT)
+        try:
+            fd = os.open(self.tmpfile,os.O_RDWR|os.O_CREAT)
+        except:
+            print "Error in App::__init__:: could not open file"
+            sys.exit(1)        
         os.write(fd,"#! /bin/sh\n")
         os.write(fd,''.join(["kill -s INT ", str(PID), "\n"]))
         os.close(fd)
         
-        self.shutdownflag = False
-        
-        self.C = Calibration()
+        try:
+            self.C = Calibration()
+        except:
+            print "Error in App::__init__: "
+            sys.exit(1)
+            
         self.C.LM.SetBeamWidth(10)
         
         # initialising parameters
@@ -31,10 +38,16 @@ class App():
         self.C.P.StoreParameter("L_rcm", "1000", "string")
         self.C.P.StoreParameter("dist_x","0","integer")
         self.C.P.StoreParameter("dist_y","0","integer")
-        self.C.P.StoreParameter("row","0","integer")          
+        self.C.P.StoreParameter("row","0","integer")  
+        
+        self.shutdownflag = False
         
         print "init done"
         
+    def handler(self, signum, frame):
+        print 'Signal handler called with signal', signum
+        self.shutdownflag = True
+            
     def run(self):
         #try:
             while True: # never stop ...
@@ -86,7 +99,7 @@ class App():
             
                 else:
                     if self.shutdownflag:
-                        print "signal: shutting down process ..."
+                        print "shutting down process ..."
                         self.C.Cam.Close()
                         if os.path.isfile(self.tmpfile):
                             os.remove(self.tmpfile)
@@ -101,13 +114,10 @@ class App():
         #        os.remove(self.tmpfile)
         #    sys.exit(0)
 
-def handler(signum, frame):
-    print 'Signal handler called with signal', signum
-    app.shutdownflag = True
-    
+
 app = App()
-signal.signal(signal.SIGINT, handler)
-signal.signal(signal.SIGHUP, handler)
+signal.signal(signal.SIGINT, app.handler)
+signal.signal(signal.SIGHUP, app.handler)
 app.run()
 
 

@@ -73,8 +73,12 @@ class Laser_Stairville__150_RGY: # for each laser model define such a class
 
 
 class LaserManagement: # this class provides functions to deal with the connected lasers     
-    def __init__(self):        
-        self.dmx = DmxPro('/dev/ttyUSB0', 25) # interface to DMX Pro driver
+    def __init__(self): 
+        try:
+            self.dmx = DmxPro('/dev/ttyUSB0', 25) # interface to DMX Pro driver
+        except:
+            print "Error in LaserManagement::__init__: "
+            sys.exit(1)
         self.Lasers = []
         L1 = Laser_Stairville__150_RGY(DMX_address=1) # for each connected laser, instantiate such a class (use different DMX addresses!) and append to Lasers[]
         self.Lasers.append(L1)

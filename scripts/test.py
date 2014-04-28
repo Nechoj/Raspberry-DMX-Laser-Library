@@ -1,13 +1,15 @@
-from CVision import Calibration
+from CVision import *
+from Laser import LaserManagement
 import time
 
 C = Calibration()
 
+
 beamwidth = 10
 C.LM.SetBeamWidth(beamwidth)
 C.LM.Move(70,80)
-C.CalibrateBrightness(control=True, color="green")
-C.GetLaserPosition(beamwidth,control=True,threshold=251)
+#C.CalibrateBrightness(control=True, color="green")
+#C.GetLaserPosition(beamwidth,control=True,threshold=251)
 
 #C.LM.Stop()
 #for i in xrange(0,30,1):

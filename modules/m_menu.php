@@ -1,7 +1,7 @@
 <?php
 function create_menu(){
     
-    $menu_items = array("Find Book" => "/index.php","Detect Book" => "/register_books.php","Manage Books" => "/books.php");
+    $menu_items = array("Find Book" => "/index.php","Manage Books" => "/books.php");
     
     echo "<ul>\n";
     foreach ($menu_items as &$item) {

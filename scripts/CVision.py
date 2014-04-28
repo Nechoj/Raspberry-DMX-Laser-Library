@@ -11,8 +11,12 @@ from Laser import LaserManagement
 class Camera:
     def __init__(self):
         """initialises picamera"""
-        
-        self.camera = picamera.PiCamera()
+        try:
+            self.camera = picamera.PiCamera()
+        except:
+            print "Error in Camera::__init__: "
+            sys.exit(1)
+            
         self.camera.led = False
         self.img = np.empty([0,0]) # initialise with 0 size
         # default values for PiCamera
@@ -70,9 +74,13 @@ class Calibration:
     def __init__(self, laser=1):
         """initialises components and reads system paramters from database"""
         
-        self.Cam = Camera()
-        self.LM = LaserManagement()
-        self.P = Parameter() # interface to database table parameters
+        try:
+            self.Cam = Camera()
+            self.LM = LaserManagement()
+            self.P = Parameter() # interface to database table parameters
+        except:
+            print "Error in Calibration::__init__:"
+            sys.exit(1)        
         
         # the following parameters are stored in the database and set in functions FindShelves and FindBorders
         # all parameters are normalised to a coordinate system height = width = 1.0
