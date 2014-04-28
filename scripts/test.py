@@ -1,13 +1,23 @@
 from CVision import *
-from Laser import LaserManagement
 import time
+import RPi.GPIO as GPIO
 
 C = Calibration()
 
+#GPIO.setmode(GPIO.BCM)
+#GPIO.setup(7, GPIO.OUT)
+#for i in range(30):
+#    print "high"
+#    GPIO.output(7, GPIO.HIGH)
+#    time.sleep(2)
+#    print "low"
+#    GPIO.output(7, GPIO.LOW)
+#    time.sleep(2)    
 
-beamwidth = 10
-C.LM.SetBeamWidth(beamwidth)
-C.LM.Move(70,80)
+
+#beamwidth = 10
+#C.LM.SetBeamWidth(beamwidth)
+#C.LM.Move(70,80)
 #C.CalibrateBrightness(control=True, color="green")
 #C.GetLaserPosition(beamwidth,control=True,threshold=251)
 
