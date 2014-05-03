@@ -25,7 +25,7 @@ dmx.setChannel(7,x)  # move to x position
 dmx.setChannel(8,y)  # move to y position
 dmx.setChannel(9,32)  # color: 16=red, 32=green, 48=yellow (both), 127=changing
 
-for i in xrange(1,count,1): # repeat command every 1/10 sec
+for i in range(count): # repeat command every 1/10 sec
         dmx.send()
         time.sleep(0.1)
 
