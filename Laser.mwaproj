@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<webArchitectProject>
+  <meta>
+    <name>Laser</name>
+    <serverExtensions>ext</serverExtensions>
+    <connectionProfile>
+    </connectionProfile>
+    <webUrl>
+    </webUrl>
+    <cloakFileExtension>False</cloakFileExtension>
+    <defaultOfflinePublishDir>
+    </defaultOfflinePublishDir>
+  </meta>
+  <pages>
+    <siteRoot>
+      <page fileName="index.php" type="StaticPage" enabled="True" />
+      <page fileName="books.php" type="StaticPage" enabled="True" />
+      <page fileName="parameters.php" type="StaticPage" enabled="True" />
+      <page fileName="websocket.html" type="StaticPage" enabled="True" />
+      <page fileName="scripts" type="FolderPage" enabled="True" displayName="scripts">
+        <page fileName="DmxPro.py" type="StaticPage" enabled="True" />
+        <page fileName="laser_xy.py" type="StaticPage" enabled="True" />
+        <page fileName="laser_cm.py" type="StaticPage" enabled="True" />
+        <page fileName="Calibration.py" type="StaticPage" enabled="True" />
+        <page fileName="CVision.py" type="StaticPage" enabled="True" />
+        <page fileName="Laser.py" type="StaticPage" enabled="True" />
+        <page fileName="Parameter.py" type="StaticPage" enabled="True" />
+        <page fileName="laser_daemon.py" type="StaticPage" enabled="True" />
+        <page fileName="laser_daemon.sh" type="StaticPage" enabled="True" />
+        <page fileName="test.py" type="StaticPage" enabled="True" />
+      </page>
+      <page fileName="css" type="FolderPage" enabled="True" displayName="css">
+        <page fileName="style_handheld.css" type="StaticPage" enabled="True" />
+        <page fileName="style_screen.css" type="StaticPage" enabled="True" />
+        <page fileName="blitzer" type="FolderPage" enabled="True" displayName="blitzer">
+          <page fileName="jquery-ui-1.10.4.custom.css" type="StaticPage" enabled="True" />
+          <page fileName="jquery-ui-1.10.4.custom.min.css" type="StaticPage" enabled="True" />
+          <page fileName="images" type="FolderPage" enabled="True" displayName="images">
+            <page fileName="animated-overlay.gif" type="StaticPage" enabled="True" />
+            <page fileName="ui-bg_diagonals-thick_75_f3d8d8_40x40.png" type="StaticPage" enabled="True" />
+            <page fileName="ui-bg_dots-small_65_a6a6a6_2x2.png" type="StaticPage" enabled="True" />
+            <page fileName="ui-bg_flat_0_333333_40x100.png" type="StaticPage" enabled="True" />
+            <page fileName="ui-bg_flat_65_ffffff_40x100.png" type="StaticPage" enabled="True" />
+            <page fileName="ui-bg_flat_75_ffffff_40x100.png" type="StaticPage" enabled="True" />
+            <page fileName="ui-bg_glass_55_fbf8ee_1x400.png" type="StaticPage" enabled="True" />
+            <page fileName="ui-bg_highlight-hard_100_eeeeee_1x100.png" type="StaticPage" enabled="True" />
+            <page fileName="ui-bg_highlight-hard_100_f6f6f6_1x100.png" type="StaticPage" enabled="True" />
+            <page fileName="ui-bg_highlight-soft_15_cc0000_1x100.png" type="StaticPage" enabled="True" />
+            <page fileName="ui-icons_004276_256x240.png" type="StaticPage" enabled="True" />
+            <page fileName="ui-icons_cc0000_256x240.png" type="StaticPage" enabled="True" />
+            <page fileName="ui-icons_ffffff_256x240.png" type="StaticPage" enabled="True" />
+          </page>
+        </page>
+      </page>
+      <page fileName="modules" type="FolderPage" enabled="True" displayName="modules">
+        <page fileName="m_parameters.php" type="StaticPage" enabled="True" />
+        <page fileName="m_books.php" type="StaticPage" enabled="True" />
+        <page fileName="m_menu.php" type="StaticPage" enabled="True" />
+      </page>
+      <page fileName="images" type="FolderPage" enabled="True" displayName="images">
+        <page fileName="FindShelves.jpg" type="StaticPage" enabled="True" />
+        <page fileName="FindBorders.jpg" type="StaticPage" enabled="True" />
+        <page fileName="FindBorders_left.jpg" type="StaticPage" enabled="True" />
+        <page fileName="FindBorders_right.jpg" type="StaticPage" enabled="True" />
+        <page fileName="GetLaserPosition.jpg" type="StaticPage" enabled="True" />
+        <page fileName="GetLaserThreshold.jpg" type="StaticPage" enabled="True" />
+        <page fileName="GetLaserGimg.jpg" type="StaticPage" enabled="True" />
+        <page fileName="CalculateWarpMatrix.jpg" type="StaticPage" enabled="True" />
+        <page fileName="MissingBook_threshold.jpg" type="StaticPage" enabled="True" />
+        <page fileName="MissingBook.jpg" type="StaticPage" enabled="True" />
+        <page fileName="MissingBookGimg.jpg" type="StaticPage" enabled="True" />
+        <page fileName="test_ocr.jpg" type="StaticPage" enabled="True" />
+      </page>
+      <page fileName="js" type="FolderPage" enabled="True" displayName="js">
+        <page fileName="jquery-1.10.2.js" type="StaticPage" enabled="True" />
+        <page fileName="jquery-ui-1.10.4.custom.js" type="StaticPage" enabled="True" />
+        <page fileName="jquery-ui-1.10.4.custom.min.js" type="StaticPage" enabled="True" />
+      </page>
+    </siteRoot>
+  </pages>
+  <navigationMenus />
+</webArchitectProject>
