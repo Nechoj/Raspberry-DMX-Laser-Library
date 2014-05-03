@@ -218,9 +218,6 @@ function laser_to_position($row, $dist){
     mysql_close($link);
 }
 
-// zotero online access:
-// https://api.zotero.org/users/1891057/items?itemType=book&format=atom&newer=50&key=nq4YkbsXFcnu3XJKaK2aY291
-
 function zotero_sync(){
 // function to fetch and read out the zotero db file zotero.sqlite and stores the entries in the mysql books db
 // (note: the zotero.sqlite db can not be used directly as performance over the network is poor)
@@ -335,8 +332,6 @@ function zotero_sync(){
     $db->close();
     mysql_close($link);
 }
-// zotero online access:
-// https://api.zotero.org/users/1891057/items?itemType=book&format=atom&newer=50&key=nq4YkbsXFcnu3XJKaK2aY291
 
 function zotero_sync_online(){
 //function to read items from zotero.org and to store them in DB books
@@ -347,7 +342,7 @@ function zotero_sync_online(){
     $key = get_parameter("ZoteroKey1") . get_parameter("ZoteroKey2");
     
     // read items from zotero.org
-    $url = "https://api.zotero.org/users/" . $uid . "/items?itemType=book&limit=10&format=atom&content=json&newer=" . (string)$max_version . "&key=" . $key;
+    $url = "https://api.zotero.org/users/" . $uid . "/items?itemType=book&format=atom&content=json&newer=" . (string)$max_version . "&key=" . $key;
     //echo $url . '<br />';
     
     // analyse content
