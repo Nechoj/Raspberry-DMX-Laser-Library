@@ -11,6 +11,7 @@
   $message1 = '';
   $message2 = '';
   $message3 = '';
+  $message4 = '';
   $row = '';
   $dist = '';
 ?>
@@ -42,6 +43,11 @@
     </script>
   </head>
   <body>
+    <?php // this php script needs to be called before any function book_select() call in order to get actual lists
+        if (isset($_REQUEST["button_sync"])){ // if button_sync was clicked: execute this function *before* the select list is being queried
+            $message4 = zotero_sync_online();
+        }
+    ?>
     <div class="layoutPage">
       <div class="layoutPageHead">
         <div class="globalLogo left">
@@ -66,6 +72,9 @@
             <li>
               <a href="#tabs-3">Delete Books</a>
             </li>
+            <li>
+              <a href="#tabs-4">Zotero</a>
+            </li>          
           </ul>
           <div id="tabs-0">
             <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
@@ -110,13 +119,10 @@
             <p>
               1.) Select book from list, or, type in title and author:
             </p><?php 
-                        if (isset($_REQUEST["button_sync"])){ // if button_sync was clicked: execute this function *before* the select list is being queried
-                        $message = zotero_sync();
-                        }
                         if (isset($_REQUEST["button_test"])){ // if button_test was clicked
                             laser_to_position($_POST['row'], $_POST['position']);    
                         }
-                        if (isset($_REQUEST["button_off"])){ // if button_test was clicked
+                        if (isset($_REQUEST["button_off"])){ // if button_off was clicked
                             set_parameter("Action", "Stop"); // this parameter is then read by the laser_daemon process    
                         }
                         if (isset($_REQUEST["button_store"])){ // if button_store was clicked
@@ -140,7 +146,7 @@
               <p>
                 <select name="books" class="DropDown" size="1" onchange="CheckSelection()">
                   <?php book_select(isset($_POST['books']) ? substr($_POST['books'], 2) : 0); ?>
-                </select> <input type="submit" name="button_sync" class="Button" value="zotero sync" />
+                </select> 
               </p>
               <p>
                 <input type="text" class="Inputfield2" name="title" value="" /> title <!-- value is set in function CheckSelection() -->
@@ -162,7 +168,7 @@
                 position (cm from left border)
               </p>
               <p>
-                <input type="submit" name="button_test" class="Button" value="test position" /> <input type="submit" name="button_off" class="Button" value="laser off" />
+                <input type="submit" name="button_test" class="Button" value="test position" />
               </p>
               <hr style="margin-top:2em;"/>  
               <p>
@@ -196,6 +202,9 @@
                                     $message2 =  "input parameter missing";
                                 }
                             }
+                            if (isset($_REQUEST["test_position"])){
+                                laser_to_position($_POST['row2'], $_POST['dist2']); 
+                            }
                         }
                     ?>
             <form action="<?php echo $_SERVER['PHP_SELF'] . '#tabs-2';?>" method="post">
@@ -211,7 +220,9 @@
                 <input type="text" class="Inputfield1" name="dist2" value="<?php echo isset($_POST['dist2']) ? htmlspecialchars($dist) : ''; ?>" /> position (cm from left border)
               </p>
               <p>
-                <input type="submit" name="button3" class="Button" value="get location" /><input type="submit" name="button4" class="Button" value="set location" />
+                <input type="submit" name="button3" class="Button" value="get location" />
+                <input type="submit" name="test_position" class="Button" value="test position" />
+                <input type="submit" name="button4" class="Button" value="set location" />
               </p>
               <div class="Message">
                 <?php echo $message2; ?>
@@ -236,6 +247,16 @@
               </p>
               <div class="Message">
                 <?php echo $message3; ?>
+              </div>
+            </form>
+          </div>
+          <div id="tabs-4">
+            <form action="<?php echo $_SERVER['PHP_SELF'] . '#tabs-4'; ?>" method="post">
+              <p>
+                <input type="submit" name="button_sync" class="Button" value="sync with Zotero" />
+              </p>
+              <div class="Message">
+                <?php echo $message4; ?>
               </div>
             </form>
           </div>

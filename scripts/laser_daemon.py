@@ -31,7 +31,7 @@ class App():
             print "Error in App::__init__: "
             sys.exit(1)
             
-        self.C.LM.SetBeamWidth(10)
+        self.C.LM.SetBeamWidth(8)
         
         # initialising parameters
         self.C.P.StoreParameter("Action", "done", "string")
@@ -44,10 +44,15 @@ class App():
         # this flag is set by the signal handler
         self.shutdownflag = False
         
-        # variables for time-out handling of the laser
+        # variables for time-out handling of the laser beam
         self.LaserIsOn = False
-        self.TimeOut = 6 # in seconds
+        self.LaserTimeOut = 8 # in seconds
         self.LaserStartTime = 0
+        
+        # variables for time-out handling of the laser power
+        self.PowerIsOn = False
+        self.PowerTimeOut = 30 # in seconds
+        self.PowerStartTime = 0
         
         # initialise GPIOs
         GPIO.setmode(GPIO.BCM)
@@ -61,14 +66,15 @@ class App():
         self.shutdownflag = True
         
     def LaserOn(self):
-        if not self.LaserIsOn: # switch laser on if necessary
-            self.LaserStartTime = time.time()
+        if not self.PowerIsOn: # switch laser power on if necessary
             GPIO.output(7, GPIO.LOW)
-            self.LaserIsOn = True            
-            print "laser on"
-            time.sleep(2) # wait for the laser to power up
-        else:
-            self.LaserStartTime = time.time() # reset LaserStartTime
+            self.PowerIsOn = True            
+            print "laser power on"
+            time.sleep(1) # wait for the laser to power up
+
+        self.PowerStartTime = time.time() # reset PowerStartTime
+        self.LaserStartTime = time.time() # reset LaserStartTime
+        self.LaserIsOn = True
             
     def run(self):
             while True: # run until shutdownflag is True
@@ -91,8 +97,12 @@ class App():
                     if pL_rcm != None:
                         cm = pL_rcm%1000
                         row = (pL_rcm - cm)/1000
-                        self.C.LM.MoveCM(cm,0,row)
-                        print "moved_rcm", row, cm
+                        Lx, Ly = self.C.Convert_PositionToL(cm,row)
+                        if Lx!=None and Ly!=None:
+                            self.C.LM.Move(Lx,Ly)
+                            print "moved_rcm", row, cm
+                        else:
+                            print "out of range"
                     self.C.P.SetParameter("Action", "done")
         
                 elif pAction == "Stop":
@@ -101,38 +111,49 @@ class App():
                     self.C.P.SetParameter("Action", "done")  
                 
                 elif pAction == "Detect1":
-                    self.LaserOn()
                     dist_x, dist_y, row = self.C.DetectMissingBook(1)
                     print "Step 1 completed"
                     self.C.P.SetParameter("Action", "done")
 
                 
                 elif pAction == "Detect2":
-                    self.LaserOn()
                     dist_x, dist_y, row = self.C.DetectMissingBook(2)
                     if dist_x!=None and dist_y!=None:
                         print dist_x, dist_y, row
-                        self.C.LM.MoveCM(dist_x, dist_y, row)
                         self.C.P.SetParameter("dist_x",str(dist_x))
                         self.C.P.SetParameter("dist_y",str(dist_y))
-                        self.C.P.SetParameter("row",str(row))
+                        self.C.P.SetParameter("row",str(row))                        
+                        Lx, Ly = self.C.Convert_PositionToL(dist_x,row)
+                        if Lx!=None and Ly!=None:
+                            self.LaserOn()                        
+                            self.C.LM.Move(Lx,Ly)
                     else:
                         self.C.P.SetParameter("dist_x","0")
                         self.C.P.SetParameter("dist_y","0")
-                        self.C.P.SetParameter("row","0")                        
+                        self.C.P.SetParameter("row","0")
                     print "Step 2 completed"
-                    self.C.P.SetParameter("Action", "done") 
+                    self.C.P.SetParameter("Action", "done")
 
+                elif pAction == "ResetTimer":
+                    self.LaserOn()
             
                 else:
-                    # if laser is on and time-out has come switch it off
+                    # if laser is on and time-out has come turn laser off
                     if self.LaserIsOn:
                         t_diff = time.time() - self.LaserStartTime
-                        if t_diff > self.TimeOut:
-                            GPIO.output(7, GPIO.HIGH)
+                        if t_diff > self.LaserTimeOut:
+                            self.C.LM.Stop()
                             self.LaserIsOn = False
                             print "laser off"
                         
+                    # if laser power is on and time-out has come turn laser power off
+                    if self.PowerIsOn:
+                        t_diff = time.time() - self.PowerStartTime
+                        if t_diff > self.PowerTimeOut:
+                            GPIO.output(7, GPIO.HIGH)
+                            self.PowerIsOn = False
+                            print "laser power off"
+                    
                     if self.shutdownflag:
                         print "shutting down process ..."
                         self.C.Cam.Close()

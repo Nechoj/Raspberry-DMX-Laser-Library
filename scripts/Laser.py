@@ -1,6 +1,5 @@
 import numpy as np
 from DmxPro import DmxPro
-from Parameter import Parameter
 
 class Laser_Stairville__150_RGY: # for each laser model define such a class
     def __init__(self, DMX_address=1): # most DMX devices allow for configuring the start address within the 512 DMX channels
@@ -16,27 +15,6 @@ class Laser_Stairville__150_RGY: # for each laser model define such a class
         
         # distance of laser to shelves in cm
         self.distance = 525.0
-        
-        
-        P = Parameter() # interface to database table parameters
-        
-        # parameters y_row_i: Laser y-channels corresponding to shelves;
-        # these parameters are automatically set in function CVision::Cam:AssignLaserToShelves(), or set in the database laser - table parameters - manually
-        self.y_row = [] # y_row[i]: Ly channel numer of shelf i+1
-        for i in range(10): # max 10 shelves should be enough in any case ...
-            p = P.GetParameter(''.join(["y_row_", str(i+1)]))
-            if p != None:
-                self.y_row.append(p)
-        self.y_row = np.array(self.y_row)
-        
-        # matrix to convert real world cm coordinates into laser channel values
-        # this matrix is calculated in function CVision::Cam:CreateLaserMatrix()
-        self.matCMtoL = np.zeros((3,3), np.float32)
-        for i in (0,1,2):
-            for j in (0,1,2):      
-                p = P.GetParameter(''.join(["matCMtoL_", str(i), str(j)]))
-                if p != None:
-                    self.matCMtoL[i,j] = p
         
         # initialising the buffer for the DMX channel values
         self.buffer=bytearray(self.no_of_channels) # array for holding the data to be sent; buffer[0] is channel 1
@@ -98,46 +76,17 @@ class LaserManagement: # this class provides functions to deal with the connecte
         self.dmx.setChannels(L.offset, L.buffer)
         self.dmx.send()
             
-    def MoveCM(self, dist_x, dist_y, row = -1, laser=1):
-        """moves laser to pyisical point (dist_x, dist_y) where dist_x is the distance in cm of the point to the left border of the shelves,
-        dist_y is the distance in cm to the bottom shelf. If parameter row is > 0, this is the number of the shelf and dist_y is ignored."""
-        
-        L = self.Lasers[laser-1]
-        Lx, Ly, Lz = np.dot(L.matCMtoL, [dist_x, dist_y, 1.0])
-        Lx = int(round(Lx/Lz))
-        Ly = int(round(Ly/Lz))
-        
-        Lx_max = max(L.max_left, L.max_right)
-        Lx_min = min(L.max_left, L.max_right)
-        Ly_max = max(L.max_top, L.max_bottom)
-        Ly_min = min(L.max_top, L.max_bottom)
-        
-        if Lx > Lx_max or Lx < Lx_min:
-            return None, None # Lx out of allowed range
-        
-        if row == -1:
-            if Ly > Ly_max or Ly < Ly_min:
-                return None, None # Ly out of allowed range
-        elif row > 0 and row <= len(L.y_row):
-            Ly = L.y_row[row-1]
-        else:
-            return None, None # row out of allowed range
-        
-        self.Move(Lx,Ly,laser)
-        return Lx, Ly
             
     def Stop(self):
-        """turns of all lasers"""        
-        
+        """turns of all lasers"""
         for L in self.Lasers:
             L.SetStop()
             self.dmx.setChannels(L.offset, L.buffer)
+        self.dmx.send()  
         
-        self.dmx.send()               
             
     def GetMaxChannels(self, laser=1):
         """returns max_left, max_right, max_top, max_bottom"""
-        
         L = self.Lasers[laser-1]
         return L.max_left, L.max_right, L.max_top, L.max_bottom
         

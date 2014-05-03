@@ -19,6 +19,8 @@ class Camera:
             
         self.camera.led = False
         self.img = np.empty([0,0]) # initialise with 0 size
+        self.previous_img = np.empty([0,0])   # array to store the prevous image (used e.g. in function DetectMissingBook)    
+        
         # default values for PiCamera
         self.best_brightness = 50
         self.best_exposure_compensation = 0
@@ -82,6 +84,7 @@ class Calibration:
             print "Error in Calibration::__init__:"
             sys.exit(1)        
         
+        
         # the following parameters are stored in the database and set in functions FindShelves and FindBorders
         # all parameters are normalised to a coordinate system height = width = 1.0
         
@@ -89,8 +92,6 @@ class Calibration:
         # usage: a = self.shelves_ab[i,1]*height, b = self.shelves_ab[i,2]*height/width where height and width are from actual image
         # y = a + x*b  
         self.shelves_ab = [] # [i,a,b] i = index of shelf, a = intercept, b = slope
-        self.y_row = [] # y_row[i]: Ly channel numer of shelf i+1
-        
         self.no_of_shelves = self.P.GetParameter("no_of_shelves")
         
         if self.no_of_shelves != None:
@@ -99,13 +100,8 @@ class Calibration:
                 b = self.P.GetParameter(''.join(["shelves_b_", str(i)]))
                 if a != None and b!= None:
                     self.shelves_ab.append([i,a,b])
-                
-                p = self.P.GetParameter(''.join(["y_row_", str(i+1)]))
-                if p != None:
-                    self.y_row.append(p)
         
         self.shelves_ab = np.array(self.shelves_ab)
-        self.y_row = np.array(self.y_row)
         
         # ab parameters of straight lines representing the borders of the shelves
         # usage: a = self.borders_ab[i,1]*width, b = self.borders_ab[i,2]*width/height where height and width are from actual image
@@ -175,6 +171,7 @@ class Calibration:
         # dx, dy for physical coordinates: 'pixels per cm' in warped image
         self.dx = self.P.GetParameter("dx")
         self.dy = self.P.GetParameter("dy")
+        
         # distance between camera and shelves in cm
         p = self.P.GetParameter("distance")
         if p == None:
@@ -207,16 +204,19 @@ class Calibration:
     def __del__(self):
         self.Cam.Close()  
         
-    def CalibrateBrightness(self, control=False, color="none", width=640, height=480):         
+    def CalibrateBrightness(self, beamwidth, control=False, color="none", width=640, height=480):         
          """this function sets the brightness so that the laser beam is the brightest signal in the image.
          When calling this function, the laser beam must be on and pointing to some books"""
          
+         max_255 = int(beamwidth*self.dx*self.dy) # max number of bright pixels
          if control == True:
-            print "calibrating brightness and exposure compensation ..."
-         max_255 = width*height*0.0001 # max number of bright pixels
+            print "calibrating brightness and exposure compensation..."
+            print "max_255=", max_255
+
          
          # first round: step 10
          for b in xrange(71,0,-10):
+            #self.P.SetParameter("Action","ResetTimer") # keep laser alive
             self.Cam.SetBrightness(b)
             self.Cam.QueryImage(width,height)
             if color == "green": # make sure green laser is turned on! 
@@ -234,6 +234,7 @@ class Calibration:
                     
          # second round: step 1         
          for bb in xrange(b+9,b-1,-1):
+            #self.P.SetParameter("Action","ResetTimer") # keep laser alive
             self.Cam.SetBrightness(bb)
             self.Cam.QueryImage(width,height)
             if color == "green": # make sure green laser is turned on! 
@@ -246,27 +247,33 @@ class Calibration:
             else:
                 gimg = self.CropImg(self.Cam.img) # crop image            
                 hist = np.bincount(gimg.ravel(),minlength=256) # optimise on all channels
-                if hist[255] < 2*max_255_pixels:
+                if hist[255] < 2*max_255:
                     break    
          
-         self.Cam.best_brightness = self.Cam.best_brightness + 1 # one step back
+         #self.Cam.best_brightness = self.Cam.best_brightness + 1 # one step back
          if control == True:
             print "best_brightness: ", self.Cam.best_brightness
          
          # third round: find optimal camera.exposure_compensation
          # optimise on number of laser spot contours found
-         for c in xrange(10,-25,-1):
+         for c in xrange(20,-25,-1):
+            #self.P.SetParameter("Action","ResetTimer") # keep laser alive
             self.Cam.SetExposureCompensation(c)
             self.Cam.QueryImage(width,height)
-            simg = cv2.split(self.Cam.img)
-            gimg = simg[1] # simg[1] is the green channel
+            
+            if color == "green": # make sure green laser is turned on!
+                simg = cv2.split(self.Cam.img)
+                gimg = simg[1] # simg[1] is the green channel
+            else:
+                gimg = self.Cam.img
+                
             gimg = self.WarpImg(gimg) # warp
             gimg = self.CropImg(gimg) # crop image
             gimg = cv2.blur(gimg, (3,3) ) # blur
             ret, dst = cv2.threshold(gimg, 251, 255, cv2.THRESH_BINARY) # only keep the brightest pixels        
             # detect contours
             contours, hierarchy = cv2.findContours( dst, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            if contours != None and len(contours)<5:
+            if contours != None and len(contours)<3:
                 break
             
          if control == True:
@@ -305,7 +312,8 @@ class Calibration:
         min_height = width*0.02
         
         # take image, convert to gray and blur
-        self.Cam.SetBrightness(50) # restore default value       
+        self.Cam.SetBrightness(50) # restore default value  
+        self.Cam.SetExposureCompensation(0)
         self.Cam.QueryImage(width,height)         
         gray = cv2.cvtColor(self.Cam.img,cv2.COLOR_BGR2GRAY) # convert to gray image
         gray = cv2.blur(gray, (3,3) ); # blur        
@@ -485,26 +493,31 @@ class Calibration:
         """searches for vertical borders of shelves. Returns True if succesful, False otherwiese"""
                         
         # require some min height and max skewness of vertical lines
-        min_length = 3.0*self.book_height*height
-        maxLineGap = 0.1*self.book_height*height
-        max_skew = 0.2*min_length
+        min_length = int(3.0*self.book_height*height)
+        maxLineGap = int(0.1*self.book_height*height)
+        max_skew = int(0.2*min_length)
         # determine the best canny threshold: number of detected long vertical lines > lines_requested
         lines_requested = 3        
         
         if control == True:
             print "searching for at least ", lines_requested, "left border lines ..."
         
+        self.Cam.SetBrightness(50) # restore default value  
+        self.Cam.SetExposureCompensation(0)
+        self.Cam.QueryImage(width,height)         
+        gray = cv2.cvtColor(self.Cam.img,cv2.COLOR_BGR2GRAY) # convert to gray image
+        Crop = self.GetCropValues(width, height)
+        
+        # crop image to left border
+        gimg = gray[Crop[0]:Crop[1],int(Crop[2]-0.5*self.book_height*width):int(Crop[2]+self.book_height*width)]   
+            
         canny_thres = 53 # start value
         round = 1 # first round will be with step = -5, then use step = -1
         step = -10
         for i in range(canny_thres): # max steps needed
             if control == True:
                 print "testing canny_thres", canny_thres           
-            borders_left = []
-            self.Cam.QueryImage(width,height)         
-            gray = cv2.cvtColor(self.Cam.img,cv2.COLOR_BGR2GRAY) # convert to gray image
-            Crop = self.GetCropValues(width, height)
-            gimg = gray[Crop[0]:Crop[1],int(Crop[2]-0.5*self.book_height*width):int(Crop[2]+self.book_height*width)] # crop image                                       
+            borders_left = []                                            
             canny_output = cv2.Canny(gimg,canny_thres,3*canny_thres,apertureSize = 3)
             lines = cv2.HoughLinesP(canny_output,1,np.pi/180,90,None,min_length,maxLineGap) # hough lines detection        
             
@@ -520,16 +533,13 @@ class Calibration:
                     else:
                         break # best canny_thres found
             
-            if canny_thres > 1:
-                canny_thres += step
-            else:
-                return False # something went wrong ...
-        
-
-        if len(borders_left) == 0:
-            if control == True:
-                print "no left border lines found"
-            return False
+            canny_thres += step
+            if canny_thres < 1:
+                if round == 2:
+                    print "no left border lines found"
+                    return False
+                canny_thres = 1
+                round = 2
             
         if control == True:
             for b in borders_left:
@@ -539,6 +549,8 @@ class Calibration:
         if control == True:
             print "searching for at least ", lines_requested, "right border lines ..."
 
+        gimg = gray[Crop[0]:Crop[1],int(Crop[3]-self.book_height*width):int(Crop[3]+0.5*self.book_height*width)] # crop image to right border
+        
         canny_thres = 53 # start value
         round = 1 # first round will be with step = -5, then use step = -1
         step = -10
@@ -546,10 +558,6 @@ class Calibration:
             if control == True:
                 print "testing canny_thres", canny_thres         
             borders_right = []
-            self.Cam.QueryImage(width,height)         
-            gray = cv2.cvtColor(self.Cam.img,cv2.COLOR_BGR2GRAY) # convert to gray image
-            Crop = self.GetCropValues(width, height)
-            gimg = gray[Crop[0]:Crop[1],int(Crop[3]-self.book_height*width):int(Crop[3]+0.5*self.book_height*width)] # crop image                            
             canny_output = cv2.Canny(gimg,canny_thres,3*canny_thres,apertureSize = 3)
             lines = cv2.HoughLinesP(canny_output,1,np.pi/180,90,None,min_length,maxLineGap) # hough lines detection        
             
@@ -565,16 +573,13 @@ class Calibration:
                     else:
                         break # best canny_thres found
             
-            if canny_thres > 1:
-                canny_thres += step
-            else:
-                return False # something went wrong ...
-        
-
-        if len(borders_right) == 0:            
-            if control == True:
-                print "no right border lines found"
-            return False
+            canny_thres += step
+            if canny_thres < 1:
+                if round == 2:
+                    print "no right border lines found"
+                    return False
+                canny_thres = 1
+                round = 2
             
         if control == True:
             for b in borders_right:
@@ -803,9 +808,6 @@ class Calibration:
     def Convert_PtoCM(self, px, py, width=1920, height=1080):
         """for a given (px,py) point returns the distance to the left border of the shelves and to the bottom shelves in cm"""
         
-        if px == None or py == None:
-            return None, None
-            
         points = np.array([[[px,py]]],np.float32)        
         points = cv2.perspectiveTransform(points, self.matWarp) # points are converted to warped image space
         points = cv2.perspectiveTransform(points, self.matCM) # points are converted to real world space
@@ -818,7 +820,7 @@ class Calibration:
         """ parameter beamwidth is laser width in cm.
             Returns the dist_x, dist_y coordinates of the laser position, or None"""
         
-        min_length = int(0.6*beamwidth*self.dx) # 60% of laser beam in pixel
+        min_length = int(0.7*beamwidth*self.dx) # % of laser beam in pixel
         if control == True:
             print "min_length: ", min_length
         
@@ -848,7 +850,7 @@ class Calibration:
                 br = cv2.boundingRect(cnt) # type rect: (topleft x, topleft y, width, height)
                 if control == True:
                     print br
-                if br[2] >= min_length and br[3] <= 0.6*br[2]: # check on conditions
+                if br[2] >= min_length and br[3] <= 0.9*br[2]: # check on conditions
                     rect.append(br)
             
             if len(rect) == 1: # laser found
@@ -873,8 +875,8 @@ class Calibration:
                     cv2.rectangle(self.Cam.img,(tlx,tly),(brx,bry),(0,0,255),2) 
                     cv2.imwrite("/home/pi/www/images/GetLaserPosition.jpg",self.Cam.img) 
                 # center of rectangle:
-                dist_x = (b[0] + b[2]/2)/self.dx
-                dist_y = (Crop[1]-Crop[0] - (b[1] + b[3]/2))/self.dy
+                dist_x = int((b[0] + b[2]/2)/self.dx)
+                dist_y = int((Crop[1]-Crop[0] - (b[1] + b[3]/2))/self.dy)
                 return dist_x, dist_y
             elif len(rect) > 1:
                 if control == True:
@@ -888,11 +890,10 @@ class Calibration:
             return (None, None)
 
 
-    def CreateLaserMatrix(self, control = False, width = 1920, height = 1080, laser=1):
+    def CreateLaserMatrix(self, beamwidth, control = False, width = 1920, height = 1080, laser=1):
         """Determines the matrix mapping real world x_dist, y_dist coordinates onto Lx,Ly-values for the laser positions.
         Returns True, if successful, otherwise False.""" 
         
-        beamwidth = 10 # width of laser beam in cm
         self.LM.SetBeamWidth(beamwidth)
         
         max_left, max_right, max_top, max_bottom = self.LM.GetMaxChannels(laser)
@@ -903,7 +904,9 @@ class Calibration:
             
         src = []
         dst = []
-        # collect 10 random points
+        # 1st round: collect 10 random points
+        if control == True:
+            print "1st round: collecting 10 random points"        
         while len(src) < 10:
             Lx = randrange(max_left, max_right, 1)
             Ly = randrange(max_top, max_bottom, 1)
@@ -917,11 +920,37 @@ class Calibration:
 
         src = np.array([src],np.float32)
         dst = np.array([dst],np.float32)
-        self.matCMtoL, mask = cv2.findHomography(src,dst,cv2.RANSAC,1.0)
+        #self.matCMtoL, mask = cv2.findHomography(src,dst,cv2.RANSAC,1.0)
+        self.matCMtoL, mask = cv2.findHomography(src,dst,0)
+        
+        # 2nd round: walk along shelves     
+        Lx_min = int(np.amin(dst[0,:]))
+        Lx_max = int(np.amax(dst[0,:]))
+        step = int((Lx_max - Lx_min)/5)
+        if control == True:
+            print "2nd round: walk along shelves between", Lx_min, "and", Lx_max         
+        src = []
+        dst = []
+        for row in range(self.no_of_shelves):
+            foo, Ly = self.Convert_PositionToL(100, row+1)
+            if Ly != None:
+                for Lx in xrange(Lx_min,Lx_max+1,step):
+                    self.LM.Move(Lx,Ly)
+                    dist_x, dist_y = self.GetLaserPosition(beamwidth,False,251,width,height)
+                    if dist_y != None:
+                        src.append([dist_x,dist_y])
+                        dst.append([Lx,Ly])
+                        if control == True:
+                            print "x:", dist_x, "y:", dist_y, "Lx:", Lx, "Ly:", Ly
+
+        src = np.array([src],np.float32)
+        dst = np.array([dst],np.float32)
+        #self.matCMtoL, mask = cv2.findHomography(src,dst,cv2.RANSAC,1.0)
+        self.matCMtoL, mask = cv2.findHomography(src,dst,0)                
 
         if control == True:
             print "matCMtoL"
-            print self.matCMtoL       
+            print self.matCMtoL   
                
         # store values in database
         for i in (0,1,2):
@@ -954,37 +983,6 @@ class Calibration:
             return None, None
         
         
-    def Convert_LtoCM(self, Lx, Ly, width=1920, height=1080):
-        """calculates the distance in cm from the left border of the shelves and from the bottom shelf.
-        Returns the calculated values, or None"""
-                
-        imat = np.linalg.inv(self.matCMtoL) # inverse self.matCMtoL
-        points = np.array([[[Lx,Ly]]],np.float32)
-        points = cv2.perspectiveTransform(points, imat)
-        points = points.ravel()
-            
-        return int(points[0]), int(points[1])
-    
-    
-    def AssignLaserToShelves(self, control = False, width=1920, height=1080, laser=1):
-        """Calculates the Ly values for the shelves and stores in database. Returns True"""
-        
-        max_left, max_right, max_top, max_bottom = self.LM.GetMaxChannels(laser)
-            
-        x_mid = int((self.cx_left + (self.cx_width-self.cx_left)/2)*width) # x-coord of mid of shelves
-        
-        for i in xrange(0, self.no_of_shelves,1):
-            y_shelf = int((self.shelves_ab[i,1] - 0.25*self.book_height)*height + self.shelves_ab[i,2]*height/width*x_mid)  # y-coord of shelf at x_mid (- 0.25 book_height)
-            dist_x, dist_y = self.Convert_PtoCM(x_mid, y_shelf)
-            Lx, Ly = self.Convert_CMtoL(dist_x, dist_y)
-            if Ly != None:
-                if control==True:
-                    print i, int(x_mid), int(y_shelf), Lx, Ly
-                self.P.StoreParameter(''.join(["y_row_", str(i+1)]), str(Ly), "integer")
-            
-        return True
-    
-
     def Convert_PtoShelf(self, px, py, width=1920, height=1080):
         """for a given (px,py) point returns number of the shelf, this points sits on. Top shelf number is 1"""
         
@@ -995,6 +993,31 @@ class Calibration:
 
         return None
         
+    def Convert_PositionToL(self, dist_x, row, laser=1, width=1920, height=1080):
+        """for a given row and distance from left border returns the optimal Lx, Ly values"""
+        
+        Crop = self.GetCropValues(width, height) # needed for un-cropping the coordinates
+        # convert dist_x to px coordinates in warped space
+        imat1 = np.linalg.inv(self.matCM)
+        dist_y = Crop[1]/self.dy -30 # using the top shelf as dist_y
+        points = np.array([[[dist_x,dist_y]]],np.float32)
+        points = cv2.perspectiveTransform(points, imat1) # points are converted to pixel ccordinates in warped image space
+        # points are converted to pixel ccordinates in image space
+        imat2 = np.linalg.inv(self.matWarp)
+        points = cv2.perspectiveTransform(points, imat2)    
+        
+        px = points[0,0,0]
+        y_shelf = int(self.shelves_ab[row-1,1]*height + self.shelves_ab[row-1,2]*height/width*px)  # y-coord of shelf at px
+        py = y_shelf - self.book_height*height*0.25 # raise laser
+        
+        # warp
+        points = np.array([[[px,py]]],np.float32)
+        points = cv2.perspectiveTransform(points, self.matWarp)
+        # convert to real world cm
+        points = cv2.perspectiveTransform(points, self.matCM)
+        # convert to Lx, Ly; points[0,0,1] is the dist_y value
+        return self.Convert_CMtoL(dist_x, points[0,0,1], width, height, laser)
+      
         
     def DetectMissingBook(self, step, control=False, width=1920, height=1080):
         """detects position of missing (or added) books from comparing two subsequent images.
@@ -1005,8 +1028,8 @@ class Calibration:
             print "step", step
         
         if step == 2:
-            # read previous picture and corresponding time-stamp
-            gimg1 = cv2.imread("/home/pi/www/images/detect_book.jpg", 0)
+            # copy previous image and read last image time from database
+            gimg1 = np.copy(self.Cam.previous_img) # copy is used in order to not overwrite it with the next image
             last_img_time = self.P.GetParameter("last_img_time")
         
         # take new picture
@@ -1016,7 +1039,7 @@ class Calibration:
         gimg2 = self.CropImg(gimg) # crop image
         
         # store new picture as the next previous picture and store actual date-time in database
-        cv2.imwrite("/home/pi/www/images/detect_book.jpg",gimg2)        
+        self.Cam.previous_img = gimg2 
         self.P.StoreParameter("last_img_time", str(time.time()), "double")
         
         if step == 1: # nothing else to do

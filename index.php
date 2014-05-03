@@ -45,15 +45,12 @@
             </select>
           </p>
           <p>
-            <input type="submit" name="button1" class="Button" value="find book" /> <input type="submit" name="button2" class="Button" value="laser off" />
+            <input type="submit" name="button1" class="Button" value="find book" />
           </p>
         </form><?php
                     if (isset($_REQUEST["button1"])){ // if button1 was clicked on: find book
                         $bookID = substr($_POST['books'], 2); // convert IDxxx -> xxx
                         $message = laser_to_book($bookID);
-                    }
-                    if (isset($_REQUEST["button2"])){ // if button2 was clicked on: stop laser
-                        set_parameter("Action", "Stop"); // this parameter is then read by the laser_daemon process
                     }
                     ?>
         <div class="Message">

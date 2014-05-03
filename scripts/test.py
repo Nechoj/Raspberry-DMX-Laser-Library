@@ -1,25 +1,36 @@
+from optparse import OptionParser
 from CVision import *
 import time
-import RPi.GPIO as GPIO
+
+#option parser
+parser = OptionParser()
+parser.add_option("-l", "--laser", dest="l", default = "1", help="number of laser")
+parser.add_option("-x", "--xcoord", dest="x", default = "0", help="x-coordiante of laser")
+parser.add_option("-y", "--ycoord", dest="y", default = "0", help="y-coordiante of laser")
+parser.add_option("-w", "--width", dest="w", default = "7", help="width of laser")
+parser.add_option("-z", "--zoom", dest="z", default = "120", help="zoom")
+(options, args) = parser.parse_args()
+
+l = int(options.l)
+x = int(options.x)
+y = int(options.y)
+w = int(options.w)
+z = int(options.z)
 
 C = Calibration()
 
-#GPIO.setmode(GPIO.BCM)
-#GPIO.setup(7, GPIO.OUT)
-#for i in range(30):
-#    print "high"
-#    GPIO.output(7, GPIO.HIGH)
-#    time.sleep(2)
-#    print "low"
-#    GPIO.output(7, GPIO.LOW)
-#    time.sleep(2)    
+beamwidth = w
+C.LM.SetBeamWidth(beamwidth)
 
+Lx, Ly =  C.Convert_PositionToL(x, y)
+print Lx, Ly
+if Lx != None:
+    C.LM.Move(Lx,Ly)
 
-#beamwidth = 10
-#C.LM.SetBeamWidth(beamwidth)
-#C.LM.Move(70,80)
-#C.CalibrateBrightness(control=True, color="green")
-#C.GetLaserPosition(beamwidth,control=True,threshold=251)
+#C.CalibrateBrightness(beamwidth,control=True, color="green")
+C.Cam.SetBrightness(49)
+C.Cam.SetExposureCompensation(15)
+print C.GetLaserPosition(beamwidth,control=True,threshold=251)
 
 #C.LM.Stop()
 #for i in xrange(0,30,1):

@@ -88,6 +88,7 @@ function delete_book($bookID){
 function book_select($bookID = 0, $with_position = False){
 // function to create <options> for a html <select> drop-down list with all books in the database
 // parameter bookID tells, which one is selected (optional)
+// if parameter with_position is true, only books with assigned position are selected
 
     // Connecting, selecting database
     $link = mysql_connect('localhost', 'web_user', 'dbwebuserpwd')
@@ -217,6 +218,8 @@ function laser_to_position($row, $dist){
     mysql_close($link);
 }
 
+// zotero online access:
+// https://api.zotero.org/users/1891057/items?itemType=book&format=atom&newer=50&key=nq4YkbsXFcnu3XJKaK2aY291
 
 function zotero_sync(){
 // function to fetch and read out the zotero db file zotero.sqlite and stores the entries in the mysql books db
@@ -331,5 +334,79 @@ function zotero_sync(){
     // Closing connections to DBs
     $db->close();
     mysql_close($link);
+}
+// zotero online access:
+// https://api.zotero.org/users/1891057/items?itemType=book&format=atom&newer=50&key=nq4YkbsXFcnu3XJKaK2aY291
+
+function zotero_sync_online(){
+//function to read items from zotero.org and to store them in DB books
+    
+    // read parameters from database
+    $max_version = get_parameter("ZoteroVersion");
+    $uid = get_parameter("ZoteroUID");
+    $key = get_parameter("ZoteroKey1") . get_parameter("ZoteroKey2");
+    
+    // read items from zotero.org
+    $url = "https://api.zotero.org/users/" . $uid . "/items?itemType=book&limit=10&format=atom&content=json&newer=" . (string)$max_version . "&key=" . $key;
+    //echo $url . '<br />';
+    
+    // analyse content
+    $feed = file_get_contents($url);
+    $feed = str_replace('zapi:version','zversion',$feed);
+    $xml = simplexml_load_string($feed);
+    
+    // Connecting, selecting mySQL database
+    $link = mysql_connect('localhost', 'web_user', 'dbwebuserpwd')
+        or die('Could not connect: ' . mysql_error());
+    mysql_select_db('laser') or die('Could not select database laser');
+    
+    // check for new books
+    $no_of_new_books = 0;
+    foreach ($xml->entry as $entry) {
+
+        // check for maximum version
+        if((integer)$entry->zversion > $max_version){
+            $max_version = (integer)$entry->zversion;
+        }
+        
+        // access content section
+        $content = json_decode($entry->content, $assoc = true);
+        
+        if(isset($content['shortTitle']) and $content['shortTitle'] != ''){
+            $title = $content['shortTitle'];
+        }else{        
+            $title = $content['title']; 
+        }
+        
+        foreach ($content['creators'] as $creator){
+            if($creator['creatorType']=='author'){
+                if(isset($creator['name'])){
+                    $author = $creator['name'];
+                    break;
+                }elseif(isset($creator['lastName'])){ 
+                    $author = $creator['firstName'] . ' ' . $creator['lastName'];
+                    break;
+                }else{
+                    $author = 'unknown';
+                }
+            }
+        }
+        // check whether book is already in the db
+        $query = "SELECT * FROM books WHERE (title = '$title') AND (author = '$author')";
+        $res = mysql_query($query) or die('Query failed: ' . mysql_error());
+        if (!$res) {
+            return 'Error in query 264: ' . mysql_error();
+        }    
+    
+        $row = mysql_fetch_row($res);
+        if(!$row){ // book not yet there -> insert
+            $query = "INSERT INTO books (title,author,row,position) VALUES ('$title','$author',0,0)";
+            mysql_query($query) or die('INSERT failed 271: ' . mysql_error());
+            $no_of_new_books += 1;
+        }
+    }
+    mysql_close($link);
+    set_parameter("ZoteroVersion", (string)$max_version);
+    return (string)$no_of_new_books . ' new books inserted';
 }
 ?>
